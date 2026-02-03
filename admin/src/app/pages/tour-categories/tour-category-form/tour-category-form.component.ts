@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TourCategoriesService } from '../tour-categories.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { MediaPickerService } from '../../../core/services/media-picker.service';
 
 @Component({
   selector: 'app-tour-category-form',
@@ -32,6 +33,7 @@ export class TourCategoryFormComponent implements OnInit {
   private router = inject(Router);
   private service = inject(TourCategoriesService);
   private notify = inject(NotificationService);
+  private mediaPicker = inject(MediaPickerService);
 
   ngOnInit(): void {
     this.categoryId = this.route.snapshot.paramMap.get('id');
@@ -99,6 +101,16 @@ export class TourCategoryFormComponent implements OnInit {
     input.value = '';
   }
 
+  openMediaPickerImage(): void {
+    this.mediaPicker.openSingleImage().then((item) => {
+      if (item?.url) {
+        this.imageFile = null;
+        this.existingMediaId = item.id;
+        this.form.patchValue({ imageUrl: item.url });
+      }
+    });
+  }
+
   private buildFormData(): FormData {
     const value = this.form.getRawValue();
     const fd = new FormData();
@@ -110,6 +122,8 @@ export class TourCategoryFormComponent implements OnInit {
     fd.append('short_description', value.shortDescription ?? '');
     if (this.imageFile) {
       fd.append('image', this.imageFile);
+    } else if (this.existingMediaId != null) {
+      fd.append('media_id', String(this.existingMediaId));
     }
     return fd;
   }

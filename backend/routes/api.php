@@ -65,6 +65,7 @@ Route::delete('/tour-categories/{id}', [TourCategoryController::class, 'destroy'
 
 // Tours API
 Route::get('/tours/menu', [TourController::class, 'menu']);
+Route::get('/tours/edit-data', [TourController::class, 'editData']);
 Route::get('/tours', [TourController::class, 'index']);
 Route::get('/tours/slug/{slug}', [TourController::class, 'showBySlug']);
 Route::get('/tours/{id}', [TourController::class, 'show']);

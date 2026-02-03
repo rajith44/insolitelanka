@@ -23,3 +23,8 @@
 .toast-container .toast-info { background-color: #2f96b4 !important; }
 .toast-warning.ngx-toastr,
 .toast-container .toast-warning { background-color: #f89406 !important; }
+
+.auth-bg .bg-overlay {
+  opacity: 0.2 !important;
+  background-color: rgb(202, 255, 165) !important;
+}

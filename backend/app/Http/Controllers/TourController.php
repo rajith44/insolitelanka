@@ -32,6 +32,43 @@ class TourController extends Controller
     }
 
     /**
+     * All data needed to init tour form (add or edit). Single API call.
+     * GET /api/tours/edit-data
+     * GET /api/tours/edit-data?tour_id=123
+     */
+    public function editData(Request $request): JsonResponse
+    {
+        $categories = TourCategory::orderBy('title')->get()->map(fn (TourCategory $c) => [
+            'id' => (string) $c->id,
+            'title' => $c->title ?? '',
+        ]);
+        $destinations = Destination::orderBy('title')->get()->map(fn (Destination $d) => [
+            'id' => (string) $d->id,
+            'title' => $d->title ?? '',
+        ]);
+        $hotels = Hotel::orderBy('name')->get()->map(fn (Hotel $h) => [
+            'id' => (string) $h->id,
+            'name' => $h->name ?? '',
+        ]);
+
+        $payload = [
+            'categories' => $categories->values()->toArray(),
+            'destinations' => $destinations->values()->toArray(),
+            'hotels' => $hotels->values()->toArray(),
+        ];
+
+        $tourId = $request->query('tour_id');
+        if ($tourId !== null && $tourId !== '') {
+            $tour = Tour::with(['mainMedia', 'gallery.media', 'itineraryItems.media.media', 'destinations.mainMedia', 'destinations.highlights.media', 'destinations.gallery.media', 'hotels.mainMedia', 'hotels.gallery.media'])->find($tourId);
+            if ($tour) {
+                $payload['tour'] = $this->formatTour($tour, true);
+            }
+        }
+
+        return response()->json($payload);
+    }
+
+    /**
      * List tours. Optional query: category_slug — filter by tour category slug.
      * GET /api/tours
      * GET /api/tours?category_slug=adventure

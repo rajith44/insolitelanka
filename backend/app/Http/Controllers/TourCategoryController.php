@@ -48,6 +48,8 @@ class TourCategoryController extends Controller
         $mediaId = null;
         if ($request->hasFile('image')) {
             $mediaId = $this->fileUploadService->store($request->file('image'));
+        } elseif ($request->filled('media_id')) {
+            $mediaId = (int) $request->input('media_id');
         }
 
         $parentId = $request->input('parent_id');
@@ -90,6 +92,8 @@ class TourCategoryController extends Controller
 
         if ($request->hasFile('image')) {
             $data['media_id'] = $this->fileUploadService->store($request->file('image'));
+        } elseif ($request->filled('media_id')) {
+            $data['media_id'] = (int) $request->input('media_id');
         }
 
         $category->update($data);

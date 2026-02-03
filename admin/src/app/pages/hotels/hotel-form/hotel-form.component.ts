@@ -5,6 +5,7 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { Hotel } from '../hotel.model';
 import { HotelsService } from '../hotels.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { MediaPickerService } from '../../../core/services/media-picker.service';
 
 @Component({
   selector: 'app-hotel-form',
@@ -29,6 +30,7 @@ export class HotelFormComponent implements OnInit {
   private router = inject(Router);
   private service = inject(HotelsService);
   private notify = inject(NotificationService);
+  private mediaPicker = inject(MediaPickerService);
 
   ngOnInit(): void {
     this.hotelId = this.route.snapshot.paramMap.get('id');
@@ -100,6 +102,19 @@ export class HotelFormComponent implements OnInit {
       this.galleryFiles.splice(fileIndex, 1);
       this.imageUrlsArray.removeAt(index);
     }
+  }
+
+  openMediaPickerGallery(): void {
+    this.mediaPicker.openMultipleImages().then((items) => {
+      if (items?.length) {
+        items.forEach((item) => {
+          if (item.url) {
+            this.existingGalleryMediaIds.push(item.id);
+            this.imageUrlsArray.push(this.fb.control(item.url));
+          }
+        });
+      }
+    });
   }
 
   private buildFormData(): FormData {

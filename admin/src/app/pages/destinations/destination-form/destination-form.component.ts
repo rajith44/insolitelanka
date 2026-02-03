@@ -5,6 +5,7 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { DestinationsService } from '../destinations.service';
 import { Destination, DestinationHighlight } from '../destination.model';
 import { NotificationService } from '../../../core/services/notification.service';
+import { MediaPickerService } from '../../../core/services/media-picker.service';
 
 @Component({
   selector: 'app-destination-form',
@@ -35,6 +36,7 @@ export class DestinationFormComponent implements OnInit {
   private router = inject(Router);
   private destinationsService = inject(DestinationsService);
   private notify = inject(NotificationService);
+  private mediaPicker = inject(MediaPickerService);
 
   ngOnInit(): void {
     this.countries = this.destinationsService.getCountries();
@@ -133,6 +135,43 @@ export class DestinationFormComponent implements OnInit {
     input.value = '';
   }
 
+  openMediaPickerMainImage(): void {
+    this.mediaPicker.openSingleImage().then((item) => {
+      if (item?.url) {
+        this.mainImageFile = null;
+        this.existingMainMediaId = item.id;
+        this.form.patchValue({ mainImageUrl: item.url });
+      }
+    });
+  }
+
+  openMediaPickerGallery(): void {
+    this.mediaPicker.openMultipleImages().then((items) => {
+      if (items?.length) {
+        items.forEach((item) => {
+          if (item.url) {
+            this.existingGalleryMediaIds.push(item.id);
+            this.imageUrls.push(this.fb.control(item.url));
+          }
+        });
+      }
+    });
+  }
+
+  openMediaPickerHighlight(index: number): void {
+    this.mediaPicker.openSingleImage().then((item) => {
+      if (item?.url) {
+        if (this.highlightFiles.length <= index) {
+          this.highlightFiles.length = index + 1;
+          this.existingHighlightMediaIds.length = index + 1;
+        }
+        this.highlightFiles[index] = null;
+        this.existingHighlightMediaIds[index] = item.id;
+        this.highlights.at(index).patchValue({ imageUrl: item.url });
+      }
+    });
+  }
+
   onGalleryImagesChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = input.files;
@@ -187,6 +226,8 @@ export class DestinationFormComponent implements OnInit {
 
     if (this.mainImageFile) {
       fd.append('main_image', this.mainImageFile);
+    } else if (this.existingMainMediaId != null) {
+      fd.append('main_media_id', String(this.existingMainMediaId));
     }
 
     const highlightDescriptions = (value.destinationHighlights || []).map((h: any) => h.shortDescription ?? '');

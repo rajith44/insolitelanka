@@ -42,19 +42,10 @@ export class TourFormComponent implements OnInit {
   private mediaPicker = inject(MediaPickerService);
 
   ngOnInit(): void {
-    this.service.getCategoriesForSelect().subscribe(list => {
-      this.categories = list ?? [];
-    });
-    this.service.getDestinationsForSelect().subscribe(list => {
-      this.destinations = list ?? [];
-    });
-    this.service.getHotelsForSelect().subscribe(list => {
-      this.hotels = list ?? [];
-    });
-    this.countries = this.service.getCountries();
     this.tourId = this.route.snapshot.paramMap.get('id');
     this.viewOnly = this.route.snapshot.data['viewOnly'] === true;
     this.isEdit = !!this.tourId && !this.viewOnly;
+    this.countries = this.service.getCountries();
 
     this.breadCrumbItems = this.viewOnly
       ? [{ label: 'Travel Insolite' }, { label: 'Tours' }, { label: 'Tours', link: '/tours' }, { label: 'View', active: true }]
@@ -64,41 +55,43 @@ export class TourFormComponent implements OnInit {
 
     this.buildForm();
 
-    if (this.tourId) {
-      this.service.getById(this.tourId).subscribe(tour => {
-        if (tour) {
-          this.form.patchValue({
-            categoryIds: tour.categoryIds || [],
-            title: tour.title,
-            slug: tour.slug,
-            shortTitle: tour.shortTitle,
-            description: tour.description,
-            mainImageUrl: tour.mainImageUrl ?? '',
-            pricePerPerson: tour.pricePerPerson ?? 0,
-            duration: tour.duration ?? '',
-            maxPeople: tour.maxPeople ?? 0,
-            countryId: tour.countryId ?? '',
-            included: tour.included ?? '',
-            excluded: tour.excluded ?? '',
-            highlights: tour.highlights ?? '',
-            mapEmbed: tour.mapEmbed ?? '',
-            videoUrl: tour.videoUrl ?? ''
-          });
-          this.existingMainMediaId = tour.main_media_id ?? null;
-          this.existingGalleryMediaIds = tour.gallery_media_ids ?? [];
-          this.galleryFiles = [];
-          this.imageUrlsArray.clear();
-          (tour.imageUrls || []).forEach(url => this.imageUrlsArray.push(this.fb.control(url)));
-          this.itineraryArray.clear();
-          this.itineraryImageFiles = {};
-          (tour.itinerary || []).forEach(i => this.itineraryArray.push(this.createItineraryGroup(i)));
-          this.faqArray.clear();
-          (tour.faq || []).forEach(f => this.faqArray.push(this.createFaqGroup(f)));
-          this.extraServicesArray.clear();
-          (tour.extraServices || []).forEach(e => this.extraServicesArray.push(this.createExtraServiceGroup(e)));
-        }
-      });
-    }
+    this.service.getEditData(this.tourId).subscribe(data => {
+      this.categories = data.categories ?? [];
+      this.destinations = data.destinations ?? [];
+      this.hotels = data.hotels ?? [];
+      const tour = data.tour;
+      if (tour) {
+        this.form.patchValue({
+          categoryIds: tour.categoryIds || [],
+          title: tour.title,
+          slug: tour.slug,
+          shortTitle: tour.shortTitle,
+          description: tour.description,
+          mainImageUrl: tour.mainImageUrl ?? '',
+          pricePerPerson: tour.pricePerPerson ?? 0,
+          duration: tour.duration ?? '',
+          maxPeople: tour.maxPeople ?? 0,
+          countryId: tour.countryId ?? '',
+          included: tour.included ?? '',
+          excluded: tour.excluded ?? '',
+          highlights: tour.highlights ?? '',
+          mapEmbed: tour.mapEmbed ?? '',
+          videoUrl: tour.videoUrl ?? ''
+        });
+        this.existingMainMediaId = tour.main_media_id ?? null;
+        this.existingGalleryMediaIds = tour.gallery_media_ids ?? [];
+        this.galleryFiles = [];
+        this.imageUrlsArray.clear();
+        (tour.imageUrls || []).forEach(url => this.imageUrlsArray.push(this.fb.control(url)));
+        this.itineraryArray.clear();
+        this.itineraryImageFiles = {};
+        (tour.itinerary || []).forEach(i => this.itineraryArray.push(this.createItineraryGroup(i)));
+        this.faqArray.clear();
+        (tour.faq || []).forEach(f => this.faqArray.push(this.createFaqGroup(f)));
+        this.extraServicesArray.clear();
+        (tour.extraServices || []).forEach(e => this.extraServicesArray.push(this.createExtraServiceGroup(e)));
+      }
+    });
   }
 
   private buildForm(): void {
