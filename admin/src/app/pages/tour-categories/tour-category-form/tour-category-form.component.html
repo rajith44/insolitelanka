@@ -1,0 +1,79 @@
+<!-- start page title -->
+<app-pagetitle [title]="viewOnly ? 'View Tour Category' : (isEdit ? 'Edit Tour Category' : 'Add Tour Category')" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<!-- end page title -->
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Tour Category</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="mb-3">
+                <label class="form-label">Parent Category</label>
+                <ng-select
+                  formControlName="parentId"
+                  [items]="parentOptions"
+                  bindLabel="title"
+                  bindValue="id"
+                  placeholder="None (top-level category)"
+                  [readonly]="viewOnly"
+                  [clearable]="true"
+                >
+                </ng-select>
+                <small class="text-muted">Leave empty for a top-level category, or select a parent to create a sub-category.</small>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Title <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="title" placeholder="Category title" [readonly]="viewOnly" />
+                @if (form.get('title')?.invalid && form.get('title')?.touched) {
+                  <div class="invalid-feedback d-block">Title is required.</div>
+                }
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Slug</label>
+                <input type="text" class="form-control" formControlName="slug" placeholder="url-slug" [readonly]="viewOnly" />
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Short Description</label>
+            <textarea class="form-control" formControlName="shortDescription" rows="3" placeholder="Short description" [readonly]="viewOnly"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Image</label>
+            @if (form.get('imageUrl')?.value) {
+              <div class="mb-2">
+                <img [src]="form.get('imageUrl')?.value" alt="Category" class="img-thumbnail" style="max-height: 120px;" />
+              </div>
+            }
+            @if (!viewOnly) {
+              <input type="file" class="form-control" accept="image/*" (change)="onImageChange($event)" />
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    @if (!viewOnly) {
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+              <i class="bx bx-save me-1"></i> Save
+            </button>
+            <button type="button" class="btn btn-light ms-2" (click)="cancel()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</form>

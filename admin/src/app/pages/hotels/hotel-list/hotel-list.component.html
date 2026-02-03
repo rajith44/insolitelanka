@@ -1,0 +1,95 @@
+<!-- start page title -->
+<app-pagetitle title="Hotels" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<!-- end page title -->
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <h4 class="card-title mb-0">Hotel List</h4>
+        <button type="button" class="btn btn-primary" (click)="onAdd()">
+          <i class="bx bx-plus align-bottom me-1"></i> Add Hotel
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-sm-12 col-md-6 text-md-end ms-auto">
+            <label class="d-inline-flex align-items-center">
+              Search:
+              <input
+                type="text"
+                class="form-control form-control-sm ms-2"
+                style="width: 200px;"
+                [(ngModel)]="searchTerm"
+                placeholder="Name, highlights..."
+              />
+            </label>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover table-nowrap align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 60px;">#</th>
+                <th style="width: 70px;">Image</th>
+                <th>Name</th>
+                <th style="width: 70px;">Star</th>
+                <th>Price Range</th>
+                <th>Highlights</th>
+                <th class="text-center" style="width: 180px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (hotel of filteredHotels; track hotel.id) {
+                <tr>
+                  <td>{{ hotel.id }}</td>
+                  <td>
+                    @if (hotel.imageUrls.length) {
+                      <img [src]="hotel.imageUrls[0]" alt="" class="rounded" style="height: 40px; width: 40px; object-fit: cover;" />
+                    } @else {
+                      <span class="text-muted">-</span>
+                    }
+                  </td>
+                  <td>{{ hotel.name }}</td>
+                  <td>
+                    @for (s of getStars(hotel.star); track s) {
+                      <i class="bx bxs-star text-warning"></i>
+                    }
+                  </td>
+                  <td>{{ priceRange(hotel) }}</td>
+                  <td>{{ hotel.highlights | slice:0:50 }}{{ (hotel.highlights.length || 0) > 50 ? '...' : '' }}</td>
+                  <td class="text-center">
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-soft-info" (click)="onView(hotel.id)" title="View">
+                        <i class="bx bx-show"></i>
+                      </button>
+                      <button type="button" class="btn btn-soft-primary" (click)="onEdit(hotel.id)" title="Edit">
+                        <i class="bx bx-edit-alt"></i>
+                      </button>
+                      <button type="button" class="btn btn-soft-danger" (click)="onDelete(hotel.id, hotel.name)" title="Delete">
+                        <i class="bx bx-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="7" class="text-center py-4 text-muted">No hotels found.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="row mt-2">
+          <div class="col-sm-12 col-md-6">
+            <div class="dataTables_info">
+              Showing {{ filteredHotels.length }} of {{ hotels.length }} entries
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

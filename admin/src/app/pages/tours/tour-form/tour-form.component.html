@@ -1,0 +1,376 @@
+<!-- start page title -->
+<app-pagetitle [title]="viewOnly ? 'View Tour' : (isEdit ? 'Edit Tour' : 'Add Tour')" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<!-- end page title -->
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="row">
+    <!-- Basic -->
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Basic Information</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Tour Category (multiple)</label>
+                <ng-select formControlName="categoryIds" [items]="categories" bindLabel="title" bindValue="id" [multiple]="true" placeholder="Select categories" [readonly]="viewOnly" [clearable]="!viewOnly"></ng-select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Title <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="title" placeholder="Tour title" [readonly]="viewOnly" />
+                @if (form.get('title')?.invalid && form.get('title')?.touched) {
+                  <div class="invalid-feedback d-block">Title is required.</div>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Slug</label>
+                <input type="text" class="form-control" formControlName="slug" placeholder="url-slug" [readonly]="viewOnly" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Short Title</label>
+                <input type="text" class="form-control" formControlName="shortTitle" placeholder="Short title" [readonly]="viewOnly" />
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <ckeditor [editor]="Editor" formControlName="description" [disabled]="viewOnly"></ckeditor>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Image & Other Images -->
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Images</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Main Image</label>
+                @if (form.get('mainImageUrl')?.value) {
+                  <div class="mb-2">
+                    <img [src]="form.get('mainImageUrl')?.value" alt="Main" class="img-thumbnail" style="max-height: 200px;" />
+                  </div>
+                }
+                @if (!viewOnly) {
+                  <input type="file" class="form-control" accept="image/*" (change)="onMainImageChange($event)" />
+                }
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Other Images (Gallery)</label>
+                <div class="d-flex flex-wrap gap-2 mb-2" formArrayName="imageUrls">
+                  @for (ctrl of imageUrlsArray.controls; track $index) {
+                    <div class="position-relative d-inline-block">
+                      <img [src]="ctrl.value" alt="" class="img-thumbnail" style="height: 80px; width: 80px; object-fit: cover;" />
+                      @if (!viewOnly) {
+                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" (click)="removeGalleryImage($index)">&times;</button>
+                      }
+                    </div>
+                  }
+                </div>
+                @if (!viewOnly) {
+                  <input type="file" class="form-control" accept="image/*" multiple (change)="onGalleryImagesChange($event)" />
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Price, Duration, Country -->
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Price & Details</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="mb-3">
+                <label class="form-label">Price per person <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" formControlName="pricePerPerson" min="0" step="0.01" [readonly]="viewOnly" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="mb-3">
+                <label class="form-label">Duration</label>
+                <input type="text" class="form-control" formControlName="duration" placeholder="e.g. 7 days" [readonly]="viewOnly" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="mb-3">
+                <label class="form-label">Max people</label>
+                <input type="number" class="form-control" formControlName="maxPeople" min="0" [readonly]="viewOnly" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="mb-3">
+                <label class="form-label">Country</label>
+                <ng-select formControlName="countryId" [items]="countries" bindLabel="name" bindValue="id" placeholder="Select country" [readonly]="viewOnly" [clearable]="!viewOnly"></ng-select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Included, Excluded, Highlights -->
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Included / Excluded / Highlights</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label">Included</label>
+                <textarea class="form-control" formControlName="included" rows="4" placeholder="One per line or comma-separated" [readonly]="viewOnly"></textarea>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label">Excluded</label>
+                <textarea class="form-control" formControlName="excluded" rows="4" placeholder="One per line or comma-separated" [readonly]="viewOnly"></textarea>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label">Highlights</label>
+                <textarea class="form-control" formControlName="highlights" rows="4" placeholder="One per line or comma-separated" [readonly]="viewOnly"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map & Video -->
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Map & Video</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Map embed (iframe HTML)</label>
+                <textarea class="form-control" formControlName="mapEmbed" rows="4" placeholder="Paste iframe code" [readonly]="viewOnly"></textarea>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Video URL</label>
+                <input type="url" class="form-control" formControlName="videoUrl" placeholder="https://..." [readonly]="viewOnly" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Itinerary -->
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <h4 class="card-title mb-0">Itinerary</h4>
+          @if (!viewOnly) {
+            <button type="button" class="btn btn-sm btn-soft-primary" (click)="addItinerary()">
+              <i class="bx bx-plus"></i> Add Day
+            </button>
+          }
+        </div>
+        <div class="card-body">
+          <div formArrayName="itinerary">
+            @for (item of itineraryArray.controls; track $index; let itineraryIdx = $index) {
+              <div class="border rounded p-3 mb-3" [formGroupName]="itineraryIdx">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <strong>Day {{ itineraryIdx + 1 }}</strong>
+                  @if (!viewOnly) {
+                    <button type="button" class="btn btn-sm btn-soft-danger" (click)="removeItinerary(itineraryIdx)"><i class="bx bx-trash"></i></button>
+                  }
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-2">
+                      <label class="form-label">Day title</label>
+                      <input type="text" class="form-control form-control-sm" formControlName="dayTitle" placeholder="Day 1" [readonly]="viewOnly" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-2">
+                      <label class="form-label">Main title</label>
+                      <input type="text" class="form-control form-control-sm" formControlName="mainTitle" placeholder="Main title" [readonly]="viewOnly" />
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Description</label>
+                  <ckeditor [editor]="Editor" formControlName="description" [disabled]="viewOnly"></ckeditor>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Day highlights</label>
+                  <textarea class="form-control form-control-sm" formControlName="dayHighlights" rows="3" placeholder="Day highlights" [readonly]="viewOnly"></textarea>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Day activities</label>
+                  <textarea class="form-control form-control-sm" formControlName="dayActivities" rows="3" placeholder="Day activities" [readonly]="viewOnly"></textarea>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="mb-2">
+                      <label class="form-label">From (city)</label>
+                      <input type="text" class="form-control form-control-sm" formControlName="fromCity" placeholder="e.g. Colombo" [readonly]="viewOnly" maxlength="255" />
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="mb-2">
+                      <label class="form-label">To (city)</label>
+                      <input type="text" class="form-control form-control-sm" formControlName="toCity" placeholder="e.g. Kandy" [readonly]="viewOnly" maxlength="255" />
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="mb-2">
+                      <label class="form-label">Travel mileage (KM)</label>
+                      <input type="number" class="form-control form-control-sm" formControlName="travelMileageKm" placeholder="0" min="0" step="0.01" [readonly]="viewOnly" />
+                    </div>
+                  </div>
+
+                </div>
+                
+                <div class="mb-2">
+                  <label class="form-label">Destinations (multiple)</label>
+                  <ng-select formControlName="destinationIds" [items]="destinations" bindLabel="title" bindValue="id" [multiple]="true" placeholder="Select destinations" [readonly]="viewOnly" [clearable]="!viewOnly"></ng-select>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Hotels (multiple)</label>
+                  <ng-select formControlName="hotelIds" [items]="hotels" bindLabel="name" bindValue="id" [multiple]="true" placeholder="Select hotels" [readonly]="viewOnly" [clearable]="!viewOnly"></ng-select>
+                </div>
+                <div>
+                  <label class="form-label">Images</label>
+                  <div class="d-flex flex-wrap gap-2 mb-2">
+                    @for (ctrl of getItineraryImages(itineraryIdx).controls; track $index) {
+                      <div class="position-relative d-inline-block">
+                        <img [src]="ctrl.value" alt="" class="img-thumbnail" style="height: 60px; width: 60px; object-fit: cover;" />
+                        @if (!viewOnly) {
+                          <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" (click)="removeItineraryImage(itineraryIdx, $index)">&times;</button>
+                        }
+                      </div>
+                    }
+                  </div>
+                  @if (!viewOnly) {
+                    <input type="file" class="form-control form-control-sm" accept="image/*" multiple (change)="onItineraryImagesChange(itineraryIdx, $event)" />
+                  }
+                </div>
+              </div>
+            }
+          </div>
+          @if (itineraryArray.length === 0) {
+            <p class="text-muted mb-0">No itinerary days. Click "Add Day" to add one.</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <h4 class="card-title mb-0">FAQ</h4>
+          @if (!viewOnly) {
+            <button type="button" class="btn btn-sm btn-soft-primary" (click)="addFaq()">
+              <i class="bx bx-plus"></i> Add FAQ
+            </button>
+          }
+        </div>
+        <div class="card-body">
+          <div formArrayName="faq">
+            @for (item of faqArray.controls; track $index) {
+              <div class="border rounded p-3 mb-2" [formGroupName]="$index">
+                <div class="row align-items-center">
+                  <div class="col-md-5">
+                    <label class="form-label">Question</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="question" placeholder="Question" [readonly]="viewOnly" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Answer</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="answer" placeholder="Answer" [readonly]="viewOnly" />
+                  </div>
+                  @if (!viewOnly) {
+                    <div class="col-md-1">
+                      <button type="button" class="btn btn-sm btn-soft-danger mt-4" (click)="removeFaq($index)"><i class="bx bx-trash"></i></button>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+          @if (faqArray.length === 0) {
+            <p class="text-muted mb-0">No FAQ items. Click "Add FAQ" to add one.</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Extra services -->
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <h4 class="card-title mb-0">Extra Services</h4>
+          @if (!viewOnly) {
+            <button type="button" class="btn btn-sm btn-soft-primary" (click)="addExtraService()">
+              <i class="bx bx-plus"></i> Add Service
+            </button>
+          }
+        </div>
+        <div class="card-body">
+          <div formArrayName="extraServices">
+            @for (item of extraServicesArray.controls; track $index) {
+              <div class="border rounded p-2 mb-2 d-flex align-items-center gap-2" [formGroupName]="$index">
+                <input type="text" class="form-control form-control-sm" style="max-width: 300px;" formControlName="name" placeholder="Service name" [readonly]="viewOnly" />
+                <input type="number" class="form-control form-control-sm" style="max-width: 120px;" formControlName="price" min="0" step="0.01" placeholder="Price" [readonly]="viewOnly" />
+                @if (!viewOnly) {
+                  <button type="button" class="btn btn-sm btn-soft-danger" (click)="removeExtraService($index)"><i class="bx bx-trash"></i></button>
+                }
+              </div>
+            }
+          </div>
+          @if (extraServicesArray.length === 0) {
+            <p class="text-muted mb-0">No extra services. Click "Add Service" to add one.</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    @if (!viewOnly) {
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+              <i class="bx bx-save me-1"></i> Save
+            </button>
+            <button type="button" class="btn btn-light ms-2" (click)="cancel()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</form>

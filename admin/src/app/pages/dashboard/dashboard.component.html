@@ -1,0 +1,227 @@
+<!-- start page title -->
+<app-pagetitle title="Dashboard" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<!-- end page title -->
+
+@if (loading) {
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2 mb-0 text-muted">Loading dashboard...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+} @else {
+  <!-- Stats: Content -->
+  <div class="row">
+    <div class="col-xl-3 col-md-6">
+      <div class="card card-h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="avatar-sm flex-shrink-0">
+              <span class="avatar-title bg-primary-subtle text-primary rounded">
+                <i class="bx bx-briefcase font-size-20"></i>
+              </span>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <span class="text-muted d-block mb-1">Tours</span>
+              <h4 class="mb-0">{{ stats?.tours ?? 0 }}</h4>
+            </div>
+          </div>
+          <div class="mt-3">
+            <a [routerLink]="['/tours']" class="btn btn-soft-primary btn-sm">View Tours <i class="bx bx-right-arrow-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="card card-h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="avatar-sm flex-shrink-0">
+              <span class="avatar-title bg-success-subtle text-success rounded">
+                <i class="bx bx-category font-size-20"></i>
+              </span>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <span class="text-muted d-block mb-1">Tour Categories</span>
+              <h4 class="mb-0">{{ stats?.tourCategories ?? 0 }}</h4>
+            </div>
+          </div>
+          <div class="mt-3">
+            <a [routerLink]="['/tour-categories']" class="btn btn-soft-success btn-sm">View Categories <i class="bx bx-right-arrow-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="card card-h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="avatar-sm flex-shrink-0">
+              <span class="avatar-title bg-info-subtle text-info rounded">
+                <i class="bx bx-map-pin font-size-20"></i>
+              </span>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <span class="text-muted d-block mb-1">Destinations</span>
+              <h4 class="mb-0">{{ stats?.destinations ?? 0 }}</h4>
+            </div>
+          </div>
+          <div class="mt-3">
+            <a [routerLink]="['/destinations']" class="btn btn-soft-info btn-sm">View Destinations <i class="bx bx-right-arrow-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="card card-h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="avatar-sm flex-shrink-0">
+              <span class="avatar-title bg-warning-subtle text-warning rounded">
+                <i class="bx bx-hotel font-size-20"></i>
+              </span>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <span class="text-muted d-block mb-1">Hotels</span>
+              <h4 class="mb-0">{{ stats?.hotels ?? 0 }}</h4>
+            </div>
+          </div>
+          <div class="mt-3">
+            <a [routerLink]="['/hotels']" class="btn btn-soft-warning btn-sm">View Hotels <i class="bx bx-right-arrow-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats: Settings & Engagement -->
+  <div class="row">
+    <div class="col-xl-3 col-md-6">
+      <div class="card card-h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="avatar-sm flex-shrink-0">
+              <span class="avatar-title bg-secondary-subtle text-secondary rounded">
+                <i class="bx bx-envelope font-size-20"></i>
+              </span>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <span class="text-muted d-block mb-1">Contact Submissions</span>
+              <h4 class="mb-0">{{ stats?.contactSubmissions ?? 0 }}</h4>
+            </div>
+          </div>
+          <div class="mt-3">
+            <a [routerLink]="['/settings/contact-submissions']" class="btn btn-soft-secondary btn-sm">View All <i class="bx bx-right-arrow-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="card card-h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="avatar-sm flex-shrink-0">
+              <span class="avatar-title bg-danger-subtle text-danger rounded">
+                <i class="bx bx-mail-send font-size-20"></i>
+              </span>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <span class="text-muted d-block mb-1">Newsletter Subscribers</span>
+              <h4 class="mb-0">{{ stats?.newsletterSubscribers ?? 0 }}</h4>
+            </div>
+          </div>
+          <div class="mt-3">
+            <a [routerLink]="['/settings/newsletter']" class="btn btn-soft-danger btn-sm">View All <i class="bx bx-right-arrow-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="card card-h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="avatar-sm flex-shrink-0">
+              <span class="avatar-title bg-dark-subtle text-dark rounded">
+                <i class="bx bx-images font-size-20"></i>
+              </span>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <span class="text-muted d-block mb-1">Gallery Photos</span>
+              <h4 class="mb-0">{{ stats?.galleryPhotos ?? 0 }}</h4>
+            </div>
+          </div>
+          <div class="mt-3">
+            <a [routerLink]="['/settings/gallery']" class="btn btn-soft-dark btn-sm">View Gallery <i class="bx bx-right-arrow-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="card card-h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="avatar-sm flex-shrink-0">
+              <span class="avatar-title bg-primary-subtle text-primary rounded">
+                <i class="bx bx-slider-alt font-size-20"></i>
+              </span>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <span class="text-muted d-block mb-1">Home Sliders</span>
+              <h4 class="mb-0">{{ stats?.homePageSliders ?? 0 }}</h4>
+            </div>
+          </div>
+          <div class="mt-3">
+            <a [routerLink]="['/settings/home-page-slider']" class="btn btn-soft-primary btn-sm">View Sliders <i class="bx bx-right-arrow-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Contact Submissions -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+          <h5 class="card-title mb-0">Recent Contact Submissions</h5>
+          <a [routerLink]="['/settings/contact-submissions']" class="btn btn-soft-primary btn-sm">View All <i class="bx bx-right-arrow-alt ms-1"></i></a>
+        </div>
+        <div class="card-body">
+          @if (recentContactSubmissions.length === 0) {
+            <div class="text-center py-4 text-muted">
+              <i class="bx bx-envelope display-6 d-block mb-2"></i>
+              <p class="mb-0">No contact submissions yet.</p>
+            </div>
+          } @else {
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Message</th>
+                    <th style="width: 160px;">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of recentContactSubmissions; track item.id) {
+                    <tr>
+                      <td>{{ item.name }}</td>
+                      <td><a [href]="'mailto:' + item.email">{{ item.email }}</a></td>
+                      <td class="text-break" style="max-width: 300px;">{{ item.message }}</td>
+                      <td class="small text-muted">{{ formatDate(item.createdAt) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

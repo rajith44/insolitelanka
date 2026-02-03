@@ -1,0 +1,25 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* ngx-toastr overrides - ensure toasts are visible (Bootstrap can override node_modules) */
+#toast-container.toast-top-right,
+.toast-container.toast-top-right {
+  top: 12px !important;
+  right: 12px !important;
+  z-index: 999999 !important;
+}
+.toast-container .ngx-toastr,
+#toast-container .toast,
+.ngx-toastr {
+  opacity: 1 !important;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15) !important;
+  padding: 15px 15px 15px 50px !important;
+  width: 300px !important;
+}
+.toast-success.ngx-toastr,
+.toast-container .toast-success { background-color: #51a351 !important; }
+.toast-error.ngx-toastr,
+.toast-container .toast-error { background-color: #bd362f !important; }
+.toast-info.ngx-toastr,
+.toast-container .toast-info { background-color: #2f96b4 !important; }
+.toast-warning.ngx-toastr,
+.toast-container .toast-warning { background-color: #f89406 !important; }

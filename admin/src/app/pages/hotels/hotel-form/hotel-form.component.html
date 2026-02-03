@@ -1,0 +1,96 @@
+<!-- start page title -->
+<app-pagetitle [title]="viewOnly ? 'View Hotel' : (isEdit ? 'Edit Hotel' : 'Add Hotel')" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<!-- end page title -->
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Hotel Information</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Hotel name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="name" placeholder="Hotel name" [readonly]="viewOnly" />
+                @if (form.get('name')?.invalid && form.get('name')?.touched) {
+                  <div class="invalid-feedback d-block">Hotel name is required.</div>
+                }
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Slug</label>
+                <input type="text" class="form-control" formControlName="slug" placeholder="url-slug" [readonly]="viewOnly" />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="mb-3">
+                <label class="form-label">Star <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="star" [disabled]="viewOnly">
+                  @for (s of starOptions; track s) {
+                    <option [value]="s">{{ s }} Star</option>
+                  }
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="mb-3">
+                <label class="form-label">Price range</label>
+                <div class="input-group input-group-sm">
+                  <input type="number" class="form-control" formControlName="priceRangeMin" min="0" step="0.01" placeholder="Min" [readonly]="viewOnly" />
+                  <span class="input-group-text">-</span>
+                  <input type="number" class="form-control" formControlName="priceRangeMax" min="0" step="0.01" placeholder="Max" [readonly]="viewOnly" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <ckeditor [editor]="Editor" formControlName="description" [disabled]="viewOnly"></ckeditor>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Highlights</label>
+            <textarea class="form-control" formControlName="highlights" rows="3" placeholder="One per line or comma-separated (e.g. Pool, Spa, Free WiFi)" [readonly]="viewOnly"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Images</label>
+            <div class="d-flex flex-wrap gap-2 mb-2" formArrayName="imageUrls">
+              @for (ctrl of imageUrlsArray.controls; track $index) {
+                <div class="position-relative d-inline-block">
+                  <img [src]="ctrl.value" alt="" class="img-thumbnail" style="height: 80px; width: 80px; object-fit: cover;" />
+                  @if (!viewOnly) {
+                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" (click)="removeImage($index)">&times;</button>
+                  }
+                </div>
+              }
+            </div>
+            @if (!viewOnly) {
+              <input type="file" class="form-control" accept="image/*" multiple (change)="onImagesChange($event)" />
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (!viewOnly) {
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+              <i class="bx bx-save me-1"></i> Save
+            </button>
+            <button type="button" class="btn btn-light ms-2" (click)="cancel()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</form>

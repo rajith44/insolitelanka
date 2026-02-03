@@ -1,0 +1,73 @@
+<!-- start page title -->
+<app-pagetitle title="Gallery" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<!-- end page title -->
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <h4 class="card-title mb-0">Gallery Photos</h4>
+        <label class="btn btn-primary mb-0" [class.disabled]="uploading">
+          <i class="bx bx-upload align-bottom me-1"></i>
+          {{ uploading ? 'Uploading...' : 'Upload Photos' }}
+          <input
+            type="file"
+            class="d-none"
+            accept="image/*"
+            multiple
+            [disabled]="uploading"
+            (change)="onFileSelect($event)"
+          />
+        </label>
+      </div>
+      <div class="card-body">
+        <!-- Upload zone -->
+        <div class="border border-2 border-dashed rounded p-4 text-center mb-4 bg-light">
+          <p class="text-muted mb-2">Drag & drop images here or click "Upload Photos" above</p>
+          <p class="small text-muted mb-0">Accepted: JPG, PNG, GIF, WebP. Max 10MB per file.</p>
+        </div>
+
+        <!-- Photo grid -->
+        @if (items.length === 0 && !uploading) {
+          <div class="text-center py-5 text-muted">
+            <i class="bx bx-images display-4 d-block mb-2"></i>
+            <p class="mb-0">No photos in gallery yet. Upload some to get started.</p>
+          </div>
+        } @else {
+          <div class="row g-3">
+            @for (item of items; track item.id) {
+              <div class="col-6 col-md-4 col-lg-3">
+                <div class="card border h-100 overflow-hidden">
+                  <div class="position-relative" style="aspect-ratio: 1; background: #f8f9fa;">
+                    @if (item.imageUrl) {
+                      <img [src]="item.imageUrl" alt="Gallery" class="w-100 h-100 object-fit-cover" style="object-fit: cover;" />
+                    } @else {
+                      <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                        <i class="bx bx-image"></i>
+                      </div>
+                    }
+                    <div class="position-absolute top-0 end-0 p-2">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger"
+                        [disabled]="isDeleting(item.id)"
+                        (click)="onDelete(item)"
+                        title="Remove"
+                      >
+                        @if (isDeleting(item.id)) {
+                          <span class="spinner-border spinner-border-sm"></span>
+                        } @else {
+                          <i class="bx bx-trash"></i>
+                        }
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
