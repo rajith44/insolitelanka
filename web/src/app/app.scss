@@ -1,0 +1,33 @@
+// WhatsApp floating button - bottom right
+.whatsapp-float {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background-color: #25d366;
+  color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.5);
+    color: #fff;
+  }
+
+  &:focus {
+    color: #fff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.5);
+  }
+
+  svg {
+    display: block;
+  }
+}

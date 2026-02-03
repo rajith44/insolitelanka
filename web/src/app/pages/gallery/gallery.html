@@ -1,0 +1,55 @@
+<div class="breadcrumb-section breadcrumb-section--blur">
+    <div class="breadcrumb-section__bg" style="background-image: url(assets/img/gallery.webp);"></div>
+    <div class="breadcrumb-section__overlay"></div>
+    <div class="container breadcrumb-section__content">
+      <div class="row">
+        <div class="col-lg-12 d-flex justify-content-center">
+          <div class="banner-content">
+            <h1>Gallery</h1>
+            <ul class="breadcrumb-list">
+              <li><a routerLink="/">Home</a></li>
+              <li>Gallery</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Start Gallery section -->
+<div class="destination-gallery pt-120 mb-120">
+  <div class="container">
+    @if (loading) {
+      <div class="row">
+        <div class="col-12 text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-3 text-muted">Loading gallery...</p>
+        </div>
+      </div>
+    } @else if (photos.length === 0) {
+      <div class="row">
+        <div class="col-12 text-center py-5">
+          <p class="text-muted mb-0">No photos in the gallery yet. Check back later.</p>
+        </div>
+      </div>
+    } @else {
+      <div class="row g-4 mb-70">
+        @for (photo of photos; track photo.id) {
+          <div class="col-lg-3 col-sm-6">
+            <div class="gallery-img-wrap">
+              @if (photo.imageUrl) {
+                <img [src]="photo.imageUrl" [alt]="'Gallery photo ' + photo.id" loading="lazy" />
+                <a data-fancybox="gallery-01" [href]="photo.imageUrl">
+                  <i class="bi bi-eye"></i> View
+                </a>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+<!-- End Gallery section -->
