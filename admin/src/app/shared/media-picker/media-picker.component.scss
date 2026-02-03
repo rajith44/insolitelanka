@@ -1,0 +1,50 @@
+// Make modal body scroll when content overflows (works with or without Bootstrap's modal-dialog-scrollable)
+.media-picker-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: min(85vh, 800px);
+
+  .modal-header {
+    flex-shrink: 0;
+  }
+
+  .modal-body {
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .modal-footer {
+    flex-shrink: 0;
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  .media-card {
+    transition: box-shadow 0.2s, border-color 0.2s;
+    &:hover {
+      border-color: var(--bs-primary) !important;
+      box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), 0.25);
+    }
+  }
+  .media-grid .selected .media-card {
+    border-color: var(--bs-primary) !important;
+    box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), 0.5);
+  }
+  .thumb-wrap {
+    overflow: hidden;
+    img,
+    video {
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .selected-overlay {
+    background: rgba(0, 0, 0, 0.4);
+  }
+  .upload-zone label {
+    cursor: pointer;
+  }
+}

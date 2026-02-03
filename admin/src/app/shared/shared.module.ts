@@ -3,16 +3,17 @@ import { CommonModule } from '@angular/common';
 
 import { WidgetModule } from './widget/widget.module';
 import { PagetitleComponent } from './pagetitle/pagetitle.component';
+import { MediaPickerComponent } from './media-picker/media-picker.component';
 
 @NgModule({
   declarations: [
-
-    PagetitleComponent
+    PagetitleComponent,
+    MediaPickerComponent
   ],
   imports: [
     CommonModule,
     WidgetModule
   ],
-  exports: [PagetitleComponent]
+  exports: [PagetitleComponent, MediaPickerComponent]
 })
 export class SharedModule { }

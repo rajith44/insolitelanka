@@ -5,6 +5,7 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { ToursService } from '../tours.service';
 import { Tour, ItineraryItem, FAQItem, ExtraServiceItem } from '../tour.model';
 import { NotificationService } from '../../../core/services/notification.service';
+import { MediaPickerService } from '../../../core/services/media-picker.service';
 
 @Component({
   selector: 'app-tour-form',
@@ -38,6 +39,7 @@ export class TourFormComponent implements OnInit {
   private router = inject(Router);
   private service = inject(ToursService);
   private notify = inject(NotificationService);
+  private mediaPicker = inject(MediaPickerService);
 
   ngOnInit(): void {
     this.service.getCategoriesForSelect().subscribe(list => {
@@ -254,6 +256,46 @@ export class TourFormComponent implements OnInit {
     input.value = '';
   }
 
+  openMediaPickerMainImage(): void {
+    this.mediaPicker.openSingleImage().then((item) => {
+      if (item?.url) {
+        this.mainImageFile = null;
+        this.existingMainMediaId = item.id;
+        this.form.patchValue({ mainImageUrl: item.url });
+      }
+    });
+  }
+
+  openMediaPickerGallery(): void {
+    this.mediaPicker.openMultipleImages().then((items) => {
+      if (items?.length) {
+        items.forEach((item) => {
+          if (item.url) {
+            this.existingGalleryMediaIds.push(item.id);
+            this.imageUrlsArray.push(this.fb.control(item.url));
+          }
+        });
+      }
+    });
+  }
+
+  openMediaPickerItineraryImages(itineraryIdx: number): void {
+    this.mediaPicker.openMultipleImages().then((items) => {
+      if (items?.length) {
+        const group = this.itineraryArray.at(itineraryIdx) as FormGroup;
+        const mediaIds = (group.get('image_media_ids')?.value ?? []) as number[];
+        const imgArray = this.getItineraryImages(itineraryIdx);
+        items.forEach((item) => {
+          if (item.url) {
+            mediaIds.push(item.id);
+            imgArray.push(this.fb.control(item.url));
+          }
+        });
+        group.patchValue({ image_media_ids: mediaIds });
+      }
+    });
+  }
+
   onGalleryImagesChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = input.files;
@@ -321,6 +363,8 @@ export class TourFormComponent implements OnInit {
 
     if (this.mainImageFile) {
       fd.append('main_image', this.mainImageFile);
+    } else if (this.existingMainMediaId != null) {
+      fd.append('main_media_id', String(this.existingMainMediaId));
     }
     this.existingGalleryMediaIds.forEach(id => fd.append('gallery_media_ids[]', String(id)));
     this.galleryFiles.forEach(file => fd.append('gallery_images[]', file));

@@ -132,6 +132,8 @@ class TourController extends Controller
         $mainMediaId = null;
         if ($request->hasFile('main_image')) {
             $mainMediaId = $this->fileUploadService->store($request->file('main_image'));
+        } elseif ($request->filled('main_media_id')) {
+            $mainMediaId = (int) $request->input('main_media_id');
         }
 
         $categoryIds = $this->parseJsonInput($request->input('category_ids'));
@@ -222,6 +224,8 @@ class TourController extends Controller
 
         if ($request->hasFile('main_image')) {
             $data['main_media_id'] = $this->fileUploadService->store($request->file('main_image'));
+        } elseif ($request->filled('main_media_id')) {
+            $data['main_media_id'] = (int) $request->input('main_media_id');
         }
 
         $tour->update($data);
