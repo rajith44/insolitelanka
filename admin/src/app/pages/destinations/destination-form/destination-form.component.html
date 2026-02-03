@@ -91,7 +91,12 @@
                       </div>
                     }
                     @if (!viewOnly) {
-                      <input type="file" class="form-control form-control-sm" accept="image/*" (change)="onHighlightImageChange($index, $event)" />
+                      <div class="d-flex gap-2 flex-wrap align-items-center">
+                        <input type="file" class="form-control form-control-sm flex-grow-1" style="max-width: 180px;" accept="image/*" (change)="onHighlightImageChange($index, $event)" />
+                        <button type="button" class="btn btn-sm btn-outline-primary" (click)="openMediaPickerHighlight($index)">
+                          <i class="bx bx-library me-1"></i> Select from library
+                        </button>
+                      </div>
                     }
                   </div>
                   <div class="col-md-7">
@@ -129,7 +134,12 @@
             </div>
           }
           @if (!viewOnly) {
-            <input type="file" class="form-control" accept="image/*" (change)="onMainImageChange($event)" />
+            <div class="d-flex gap-2 flex-wrap align-items-center">
+              <input type="file" class="form-control flex-grow-1" style="max-width: 200px;" accept="image/*" (change)="onMainImageChange($event)" />
+              <button type="button" class="btn btn-outline-primary" (click)="openMediaPickerMainImage()">
+                <i class="bx bx-library me-1"></i> Select from library
+              </button>
+            </div>
           }
         </div>
       </div>
@@ -155,7 +165,12 @@
             }
           </div>
           @if (!viewOnly) {
-            <input type="file" class="form-control" accept="image/*" multiple (change)="onGalleryImagesChange($event)" />
+            <div class="d-flex gap-2 flex-wrap align-items-center">
+              <input type="file" class="form-control flex-grow-1" style="max-width: 200px;" accept="image/*" multiple (change)="onGalleryImagesChange($event)" />
+              <button type="button" class="btn btn-outline-primary" (click)="openMediaPickerGallery()">
+                <i class="bx bx-library me-1"></i> Select from library
+              </button>
+            </div>
           }
         </div>
       </div>

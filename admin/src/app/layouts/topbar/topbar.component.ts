@@ -5,7 +5,6 @@ import { CookieService } from 'ngx-cookie-service';
 import { LanguageService } from '../../core/services/language.service';
 import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../../environments/environment';
-import { AuthenticationService } from '../../core/services/auth.service';
 import { AuthfakeauthenticationService } from '../../core/services/authfake.service';
 
 import { changeMode } from 'src/app/store/layouts/layout.actions';
@@ -33,7 +32,6 @@ export class TopbarComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private authService: AuthenticationService,
     private authFackservice: AuthfakeauthenticationService,
     public languageService: LanguageService,
     public _cookiesService: CookieService,
@@ -112,10 +110,10 @@ export class TopbarComponent implements OnInit {
   }
 
   /**
-   * Logout the user
+   * Logout the user (uses same auth as login: fake-backend/JWT when apiUrl is set)
    */
   logout() {
-    this.authService.logout();
+    this.authFackservice.logout();
     this.router.navigate(['/account/login']);
   }
 

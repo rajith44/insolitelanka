@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, map, catchError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Tour } from './tour.model';
@@ -67,6 +67,45 @@ export class ToursService {
 
   getCountries(): { id: string; name: string }[] {
     return this.destinationsService.getCountries();
+  }
+
+  /**
+   * Single API call for tour form init (add or edit).
+   * Returns categories, destinations, hotels, and optionally tour when tourId provided.
+   */
+  getEditData(tourId?: string | null): Observable<{
+    categories: { id: string; title: string }[];
+    destinations: { id: string; title: string }[];
+    hotels: { id: string; name: string }[];
+    tour?: Tour;
+  }> {
+    if (!API) {
+      return of({
+        categories: [],
+        destinations: [],
+        hotels: [],
+        ...(tourId ? { tour: undefined } : {})
+      });
+    }
+    interface EditDataResponse {
+      categories?: { id: number | string; title: string }[];
+      destinations?: { id: number | string; title: string }[];
+      hotels?: { id: number | string; name: string }[];
+      tour?: any;
+    }
+    const url = `${API}/tours/edit-data`;
+    const request = tourId
+      ? this.http.get<EditDataResponse>(url, { params: new HttpParams().set('tour_id', tourId) })
+      : this.http.get<EditDataResponse>(url);
+    return request.pipe(
+      map((res) => ({
+        categories: (res.categories ?? []).map((c) => ({ id: String(c.id), title: c.title ?? '' })),
+        destinations: (res.destinations ?? []).map((d) => ({ id: String(d.id), title: d.title ?? '' })),
+        hotels: (res.hotels ?? []).map((h) => ({ id: String(h.id), name: h.name ?? '' })),
+        tour: res.tour ? this.enrichTour(mapApiToTour(res.tour)) : undefined
+      })),
+      catchError(() => of({ categories: [], destinations: [], hotels: [] }))
+    );
   }
 
   getAll(): Observable<Tour[]> {

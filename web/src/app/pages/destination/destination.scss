@@ -1,0 +1,51 @@
+// Tour cards on destination detail: same as tours page
+.destination-details-wrap .package-card .package-card-img-wrap {
+  aspect-ratio: 4 / 3;
+  position: relative;
+  border-radius: 10px;
+
+  .card-img {
+    display: block;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+  }
+
+  .batch {
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+// Destination list cards
+.package-grid-section .package-card .package-card-img-wrap {
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+
+  .card-img {
+    display: block;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+  }
+}

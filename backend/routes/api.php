@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\HomePageSliderController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\MenuController;
@@ -64,6 +65,7 @@ Route::delete('/tour-categories/{id}', [TourCategoryController::class, 'destroy'
 
 // Tours API
 Route::get('/tours/menu', [TourController::class, 'menu']);
+Route::get('/tours/edit-data', [TourController::class, 'editData']);
 Route::get('/tours', [TourController::class, 'index']);
 Route::get('/tours/slug/{slug}', [TourController::class, 'showBySlug']);
 Route::get('/tours/{id}', [TourController::class, 'show']);
@@ -103,6 +105,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);
     // Admin dashboard stats
     Route::get('/dashboard', [DashboardController::class, 'index']);
+    // Admin media library (list + upload for image/video picker)
+    Route::get('/media', [MediaController::class, 'index']);
+    Route::post('/media', [MediaController::class, 'store']);
     // Admin: view contact form submissions and newsletter subscribers
     Route::get('/contact-submissions', [ContactFormController::class, 'index']);
     Route::get('/newsletter', [NewsletterController::class, 'index']);

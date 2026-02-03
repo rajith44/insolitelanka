@@ -1,0 +1,118 @@
+
+<div class="breadcrumb-section breadcrumb-section--blur">
+    <div class="breadcrumb-section__bg" [style.background-image]="'url(' + (destination ? destination.mainImageUrl : 'assets/img/innerpage/inner-banner-bg.png') + ')'"></div>
+    <div class="breadcrumb-section__overlay"></div>
+    <div class="container breadcrumb-section__content">
+      <div class="row">
+        <div class="col-lg-12 d-flex justify-content-center">
+          <div class="banner-content">
+            <h1>{{ destination ? destination.title : 'Destination' }}</h1>
+            <ul class="breadcrumb-list">
+              <li><a routerLink="/">Home</a></li>
+              <li><a routerLink="/destination">Destination</a></li>
+              <li>{{ destination ? destination.slug : 'Destination' }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="destination-details-wrap mb-120 pt-120">
+    <div class="container">
+        <div class="row g-lg-4 gy-5">
+            <div class="col-lg-8">
+                <h2>{{ destination ? destination.title : 'Destination' }}</h2>
+                <p [innerHTML]="destination ? destination.mainDescription : 'Destination'"></p>
+                <div class="destination-gallery mb-40 mt-40">
+                    <div class="row g-4">
+                        @for (image of destination ? destination.imageUrls : []; track image) {
+                        <div class="col-lg-4 col-sm-6">
+                             <div class="gallery-img-wrap">
+                                <img [src]="image" alt="">
+                                <a data-fancybox="gallery-01" [href]="image"><i class="bi bi-eye"></i>  Discover Island</a>
+                             </div>     
+                        </div>
+                        }
+                     </div>
+                </div>
+                <h2>{{ destination ? destination.subTitle : 'Sub Title' }}</h2>
+                <p [innerHTML]="destination ? destination.subDescription : 'Sub Description'"></p>
+            </div>
+            <div class="col-lg-4">
+                <div class="destination-sidebar">
+                    
+                    <div class="banner2-card four">
+                        <img src="assets/img/home1/banner2-card-img2.jpg" alt="">
+                        <div class="banner2-content-wrap">
+                            <div class="banner2-content">
+                                <span>Savings worldwide</span>
+                                <h3>520% Off</h3>
+                                <p>For Your First Book</p>
+                            </div>
+                            <a href="package-grid.html" class="primary-btn1">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Destination Highlights from API (swiper) -->
+@if (destination && destination.destinationHighlights && destination.destinationHighlights.length) {
+<div class="destination-activitis-wrap mb-120">
+    <div class="container">
+        <div class="activity-card-slider-wrap">
+            <div class="row">
+                <div class="col-lg-12 mb-30 d-flex align-items-center justify-content-between">
+                    <div class="desti-title">
+                        <h3>Our Destination Highlights</h3>
+                    </div>
+                    <div class="slider-btn-grp2">
+                        <div class="slider-btn activity-card-slider-prev">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="9" height="17" viewBox="0 0 9 17">
+                                <path d="M8.83399 0.281832L8.72217 0.16683L0.500652 8.50016L8.72217 16.8335L8.83398 16.7185L8.83398 13.0602L4.33681 8.50016L8.83399 3.94016L8.83399 0.281832Z"></path>
+                            </svg>
+                        </div>
+                        <div class="slider-btn activity-card-slider-next">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="9" height="17" viewBox="0 0 9 17" fill="none">
+                                <path d="M0.166016 16.7182L0.277828 16.8332L8.49935 8.49984L0.277828 0.166504L0.166016 0.281504V3.93984L4.66319 8.49984L0.166016 13.0598V16.7182Z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="swiper activity-card-slider">
+                        <div class="swiper-wrapper">
+                            @for (h of destination.destinationHighlights; track $index) {
+                            <div class="swiper-slide">
+                                <div class="activity-card">
+                                    @if (h.imageUrl) {
+                                    <img [src]="h.imageUrl" [alt]="h.shortDescription || 'Highlight'">
+                                    } @else {
+                                    <img src="assets/img/home5/activity-card-img1.jpg" alt="Highlight">
+                                    }
+                                    <div class="activity-card-content-wrapper">
+                                        <div class="activity-card-content">
+                                            <div class="icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+                                                    <path d="M20.9327 1.99616L20.9755 1.95456C11.464 1.86281 1.83814 9.5448 2.00206 20.835C2.1611 31.757 10.9594 39.4586 21.2269 38.9864C22.5771 38.9265 23.9155 38.7087 25.215 38.3374C26.8317 39.6066 29.5126 40.452 31.2669 39.7406C31.9826 39.4439 32.6211 38.9674 33.1551 38.3582C35.132 36.5526 35.4324 33.4697 34.9657 30.7857C37.9103 26.6062 38.7427 21.7984 37.9855 17.3234C36.5933 9.09339 29.8252 1.99126 20.9327 1.99616Z"/>
+                                                </svg>
+                                            </div>
+                                            <div class="content">
+                                                <h6 [innerHTML]="h.shortDescription || 'Highlight'"></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}

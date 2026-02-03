@@ -5,6 +5,7 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { ToursService } from '../tours.service';
 import { Tour, ItineraryItem, FAQItem, ExtraServiceItem } from '../tour.model';
 import { NotificationService } from '../../../core/services/notification.service';
+import { MediaPickerService } from '../../../core/services/media-picker.service';
 
 @Component({
   selector: 'app-tour-form',
@@ -38,21 +39,13 @@ export class TourFormComponent implements OnInit {
   private router = inject(Router);
   private service = inject(ToursService);
   private notify = inject(NotificationService);
+  private mediaPicker = inject(MediaPickerService);
 
   ngOnInit(): void {
-    this.service.getCategoriesForSelect().subscribe(list => {
-      this.categories = list ?? [];
-    });
-    this.service.getDestinationsForSelect().subscribe(list => {
-      this.destinations = list ?? [];
-    });
-    this.service.getHotelsForSelect().subscribe(list => {
-      this.hotels = list ?? [];
-    });
-    this.countries = this.service.getCountries();
     this.tourId = this.route.snapshot.paramMap.get('id');
     this.viewOnly = this.route.snapshot.data['viewOnly'] === true;
     this.isEdit = !!this.tourId && !this.viewOnly;
+    this.countries = this.service.getCountries();
 
     this.breadCrumbItems = this.viewOnly
       ? [{ label: 'Travel Insolite' }, { label: 'Tours' }, { label: 'Tours', link: '/tours' }, { label: 'View', active: true }]
@@ -62,41 +55,43 @@ export class TourFormComponent implements OnInit {
 
     this.buildForm();
 
-    if (this.tourId) {
-      this.service.getById(this.tourId).subscribe(tour => {
-        if (tour) {
-          this.form.patchValue({
-            categoryIds: tour.categoryIds || [],
-            title: tour.title,
-            slug: tour.slug,
-            shortTitle: tour.shortTitle,
-            description: tour.description,
-            mainImageUrl: tour.mainImageUrl ?? '',
-            pricePerPerson: tour.pricePerPerson ?? 0,
-            duration: tour.duration ?? '',
-            maxPeople: tour.maxPeople ?? 0,
-            countryId: tour.countryId ?? '',
-            included: tour.included ?? '',
-            excluded: tour.excluded ?? '',
-            highlights: tour.highlights ?? '',
-            mapEmbed: tour.mapEmbed ?? '',
-            videoUrl: tour.videoUrl ?? ''
-          });
-          this.existingMainMediaId = tour.main_media_id ?? null;
-          this.existingGalleryMediaIds = tour.gallery_media_ids ?? [];
-          this.galleryFiles = [];
-          this.imageUrlsArray.clear();
-          (tour.imageUrls || []).forEach(url => this.imageUrlsArray.push(this.fb.control(url)));
-          this.itineraryArray.clear();
-          this.itineraryImageFiles = {};
-          (tour.itinerary || []).forEach(i => this.itineraryArray.push(this.createItineraryGroup(i)));
-          this.faqArray.clear();
-          (tour.faq || []).forEach(f => this.faqArray.push(this.createFaqGroup(f)));
-          this.extraServicesArray.clear();
-          (tour.extraServices || []).forEach(e => this.extraServicesArray.push(this.createExtraServiceGroup(e)));
-        }
-      });
-    }
+    this.service.getEditData(this.tourId).subscribe(data => {
+      this.categories = data.categories ?? [];
+      this.destinations = data.destinations ?? [];
+      this.hotels = data.hotels ?? [];
+      const tour = data.tour;
+      if (tour) {
+        this.form.patchValue({
+          categoryIds: tour.categoryIds || [],
+          title: tour.title,
+          slug: tour.slug,
+          shortTitle: tour.shortTitle,
+          description: tour.description,
+          mainImageUrl: tour.mainImageUrl ?? '',
+          pricePerPerson: tour.pricePerPerson ?? 0,
+          duration: tour.duration ?? '',
+          maxPeople: tour.maxPeople ?? 0,
+          countryId: tour.countryId ?? '',
+          included: tour.included ?? '',
+          excluded: tour.excluded ?? '',
+          highlights: tour.highlights ?? '',
+          mapEmbed: tour.mapEmbed ?? '',
+          videoUrl: tour.videoUrl ?? ''
+        });
+        this.existingMainMediaId = tour.main_media_id ?? null;
+        this.existingGalleryMediaIds = tour.gallery_media_ids ?? [];
+        this.galleryFiles = [];
+        this.imageUrlsArray.clear();
+        (tour.imageUrls || []).forEach(url => this.imageUrlsArray.push(this.fb.control(url)));
+        this.itineraryArray.clear();
+        this.itineraryImageFiles = {};
+        (tour.itinerary || []).forEach(i => this.itineraryArray.push(this.createItineraryGroup(i)));
+        this.faqArray.clear();
+        (tour.faq || []).forEach(f => this.faqArray.push(this.createFaqGroup(f)));
+        this.extraServicesArray.clear();
+        (tour.extraServices || []).forEach(e => this.extraServicesArray.push(this.createExtraServiceGroup(e)));
+      }
+    });
   }
 
   private buildForm(): void {
@@ -254,6 +249,46 @@ export class TourFormComponent implements OnInit {
     input.value = '';
   }
 
+  openMediaPickerMainImage(): void {
+    this.mediaPicker.openSingleImage().then((item) => {
+      if (item?.url) {
+        this.mainImageFile = null;
+        this.existingMainMediaId = item.id;
+        this.form.patchValue({ mainImageUrl: item.url });
+      }
+    });
+  }
+
+  openMediaPickerGallery(): void {
+    this.mediaPicker.openMultipleImages().then((items) => {
+      if (items?.length) {
+        items.forEach((item) => {
+          if (item.url) {
+            this.existingGalleryMediaIds.push(item.id);
+            this.imageUrlsArray.push(this.fb.control(item.url));
+          }
+        });
+      }
+    });
+  }
+
+  openMediaPickerItineraryImages(itineraryIdx: number): void {
+    this.mediaPicker.openMultipleImages().then((items) => {
+      if (items?.length) {
+        const group = this.itineraryArray.at(itineraryIdx) as FormGroup;
+        const mediaIds = (group.get('image_media_ids')?.value ?? []) as number[];
+        const imgArray = this.getItineraryImages(itineraryIdx);
+        items.forEach((item) => {
+          if (item.url) {
+            mediaIds.push(item.id);
+            imgArray.push(this.fb.control(item.url));
+          }
+        });
+        group.patchValue({ image_media_ids: mediaIds });
+      }
+    });
+  }
+
   onGalleryImagesChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = input.files;
@@ -321,6 +356,8 @@ export class TourFormComponent implements OnInit {
 
     if (this.mainImageFile) {
       fd.append('main_image', this.mainImageFile);
+    } else if (this.existingMainMediaId != null) {
+      fd.append('main_media_id', String(this.existingMainMediaId));
     }
     this.existingGalleryMediaIds.forEach(id => fd.append('gallery_media_ids[]', String(id)));
     this.galleryFiles.forEach(file => fd.append('gallery_images[]', file));
