@@ -27,10 +27,13 @@ class GalleryController extends Controller
     public function store(Request $request): JsonResponse
     {
         $files = $request->file('photos');
-        if (! $files) {
-            return response()->json(['message' => 'No photos provided'], 422);
+        $files = $files ? (is_array($files) ? $files : [$files]) : [];
+        $mediaIds = $request->input('media_ids', []);
+        $mediaIds = is_array($mediaIds) ? array_map('intval', array_filter($mediaIds)) : [];
+
+        if (empty($files) && empty($mediaIds)) {
+            return response()->json(['message' => 'No photos or media IDs provided'], 422);
         }
-        $files = is_array($files) ? $files : [$files];
 
         $maxOrder = (int) SiteGallery::max('sort_order');
         $created = [];
@@ -41,6 +44,18 @@ class GalleryController extends Controller
             }
             $mediaId = $this->fileUploadService->store($file);
             if ($mediaId) {
+                $maxOrder++;
+                $item = SiteGallery::create([
+                    'media_id' => $mediaId,
+                    'sort_order' => $maxOrder,
+                ]);
+                $item->load('media');
+                $created[] = $this->formatItem($item);
+            }
+        }
+
+        foreach ($mediaIds as $mediaId) {
+            if ($mediaId > 0) {
                 $maxOrder++;
                 $item = SiteGallery::create([
                     'media_id' => $mediaId,

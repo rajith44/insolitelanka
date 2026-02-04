@@ -3,6 +3,7 @@ import { GalleryItem } from '../gallery.model';
 import { GalleryService } from '../gallery.service';
 import { SwalService } from '../../../core/services/swal.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { MediaPickerService } from '../../../core/services/media-picker.service';
 
 @Component({
   selector: 'app-gallery-list',
@@ -19,6 +20,7 @@ export class GalleryListComponent implements OnInit {
   private service = inject(GalleryService);
   private swal = inject(SwalService);
   private notify = inject(NotificationService);
+  private mediaPicker = inject(MediaPickerService);
 
   ngOnInit(): void {
     this.breadCrumbItems = [
@@ -47,6 +49,23 @@ export class GalleryListComponent implements OnInit {
       if (created?.length) {
         this.notify.success(`${created.length} photo(s) uploaded`);
         this.load();
+      }
+    });
+  }
+
+  onSelectFromLibrary(): void {
+    this.mediaPicker.openMultipleImages().then((items) => {
+      if (items?.length) {
+        const mediaIds = items.map((item) => item.id).filter((id): id is number => id != null);
+        if (!mediaIds.length) return;
+        this.uploading = true;
+        this.service.addFromLibrary(mediaIds).subscribe((created) => {
+          this.uploading = false;
+          if (created?.length) {
+            this.notify.success(`${created.length} photo(s) added from library`);
+            this.load();
+          }
+        });
       }
     });
   }

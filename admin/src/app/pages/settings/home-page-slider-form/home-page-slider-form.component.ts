@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HomePageSliderService } from '../home-page-slider.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { MediaPickerService } from '../../../core/services/media-picker.service';
 
 @Component({
   selector: 'app-home-page-slider-form',
@@ -25,6 +26,7 @@ export class HomePageSliderFormComponent implements OnInit {
   private router = inject(Router);
   private service = inject(HomePageSliderService);
   private notify = inject(NotificationService);
+  private mediaPicker = inject(MediaPickerService);
 
   ngOnInit(): void {
     this.sliderId = this.route.snapshot.paramMap.get('id');
@@ -73,6 +75,16 @@ export class HomePageSliderFormComponent implements OnInit {
     input.value = '';
   }
 
+  openMediaPicker(): void {
+    this.mediaPicker.openSingleImage().then((item) => {
+      if (item?.url) {
+        this.imageFile = null;
+        this.existingMediaId = item.id;
+        this.form.patchValue({ imageUrl: item.url });
+      }
+    });
+  }
+
   private buildFormData(): FormData {
     const value = this.form.getRawValue();
     const fd = new FormData();
@@ -81,6 +93,8 @@ export class HomePageSliderFormComponent implements OnInit {
     fd.append('subtitle', value.subtitle ?? '');
     if (this.imageFile) {
       fd.append('image', this.imageFile);
+    } else if (this.existingMediaId != null) {
+      fd.append('media_id', String(this.existingMediaId));
     }
     return fd;
   }

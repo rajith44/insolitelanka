@@ -15,6 +15,9 @@ import {
   HomeTourItem,
   HomeHotelItem,
   HomeDestinationItem,
+  PhenomenalDealsData,
+  TestimonialSectionData,
+  TestimonialItem,
 } from '../../services/home-data.service';
 import type { HomeSliderItem } from '../../services/home-slider.service';
 
@@ -28,39 +31,11 @@ const DEFAULT_SLIDE: HomeSliderItem = {
   sortOrder: 0,
 };
 
-const TESTIMONIAL_SLIDE: any = [
-  {
-    id: '0',
-  personName: 'Morgane Huby',
-  country: '',
-  date: 'Sep 1, 2024',
-  personRating: [1, 2, 3, 4, 5],
-  personComment: 'A wonderful experience with this agency. We had the chance to meet and share moments with local families and to go and visit places where we felt Alon in the world! So amazing! Thanks to Asanka and his team for that unforgettable trip!',
-},
-{
-  id: '1',
-  personName: 'julie coutarel',
-  country: '',
-  date: 'Jun 13, 2024',
-  personRating: [1, 2, 3, 4, 5],
-  personComment: 'Hello ! Insolite Lanka is a perfect agency for French and english people. Very secure. Very good team for our family. We travelled with a baby and 2 children 12 years old. And it s perfect for us. They understood what we need. Children loved Asanka! And us too.',
-},
-{
-  id: '2',
-  personName: 'Jean-Claude Bruttin',
-  country: '',
-  date: 'Sep 18, 2025',
-  personRating: [1, 2, 3, 4, 5],
-  personComment: 'Magnifique voyage à la découverte du vrai Sri-Lanka. Quel bonheur d\'avoir choisi InsoliteLanka pour notre premier voyage au Sri-Lanka. Une équipe toujours disponible lors de la préparation de notre voyage, prête à répondre à toutes nos questions et en français. Leur connaissance du pays permet un voyage magnifique avec de nombreuses expériences et activités aussi bien culturelles, vie quotidienne des sri-lankais, nature et historique du Sri Lanka.',
-},
-{
-  id: '3',
-  personName: 'Cyrille Pignol',
-  country: '',
-  date: 'Jul 28, 2025',
-  personRating: [1, 2, 3, 4, 5],
-  personComment: 'Nous avons fait une merveilleuse découverte du Sri lanka grâce aux choix des excursions des hôtels d Ansaka. Nous etions immergés dans la vie des cingalais loin des tumultes du tourisme. C était formidable ! Merci pour tous ces moments magiques.',
-}
+const TESTIMONIAL_SLIDE: TestimonialItem[] = [
+  { id: '0', personName: 'Morgane Huby', country: '', date: 'Sep 1, 2024', personRating: [1, 2, 3, 4, 5], personComment: 'A wonderful experience with this agency. We had the chance to meet and share moments with local families and to go and visit places where we felt Alon in the world! So amazing! Thanks to Asanka and his team for that unforgettable trip!', sortOrder: 0 },
+  { id: '1', personName: 'julie coutarel', country: '', date: 'Jun 13, 2024', personRating: [1, 2, 3, 4, 5], personComment: 'Hello ! Insolite Lanka is a perfect agency for French and english people. Very secure. Very good team for our family. We travelled with a baby and 2 children 12 years old. And it s perfect for us. They understood what we need. Children loved Asanka! And us too.', sortOrder: 1 },
+  { id: '2', personName: 'Jean-Claude Bruttin', country: '', date: 'Sep 18, 2025', personRating: [1, 2, 3, 4, 5], personComment: 'Magnifique voyage à la découverte du vrai Sri-Lanka. Quel bonheur d\'avoir choisi InsoliteLanka pour notre premier voyage au Sri-Lanka. Une équipe toujours disponible lors de la préparation de notre voyage, prête à répondre à toutes nos questions et en français. Leur connaissance du pays permet un voyage magnifique avec de nombreuses expériences et activités aussi bien culturelles, vie quotidienne des sri-lankais, nature et historique du Sri Lanka.', sortOrder: 2 },
+  { id: '3', personName: 'Cyrille Pignol', country: '', date: 'Jul 28, 2025', personRating: [1, 2, 3, 4, 5], personComment: 'Nous avons fait une merveilleuse découverte du Sri lanka grâce aux choix des excursions des hôtels d Ansaka. Nous etions immergés dans la vie des cingalais loin des tumultes du tourisme. C était formidable ! Merci pour tous ces moments magiques.', sortOrder: 3 },
 ];
 
 type SwiperInstance = { destroy?: () => void };
@@ -74,11 +49,13 @@ type SwiperInstance = { destroy?: () => void };
 export class Home implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('bannerSlider') bannerSliderRef!: ElementRef<HTMLElement>;
   sliders: HomeSliderItem[] = [DEFAULT_SLIDE];
+  phenomenalDeals: PhenomenalDealsData | null = null;
+  testimonialSection: TestimonialSectionData | null = null;
+  testimonials: TestimonialItem[] = TESTIMONIAL_SLIDE as TestimonialItem[];
   tours: HomeTourItem[] = [];
   bundlesTours: HomeTourItem[] = [];
   hotels: HomeHotelItem[] = [];
   destinations: HomeDestinationItem[] = [];
-  testimonials: any[] = TESTIMONIAL_SLIDE as any;
   private bannerSwiper: SwiperInstance | null = null;
   private tabSliders: SwiperInstance[] = [];
   private testimonialSliders: SwiperInstance[] = [];
@@ -105,6 +82,9 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   private loadHomeData(): void {
     this.homeDataService.getHomePageData().subscribe(data => {
       this.sliders = (data.sliders?.length ? data.sliders : [DEFAULT_SLIDE]) as HomeSliderItem[];
+      this.phenomenalDeals = data.phenomenalDeals ?? null;
+      this.testimonialSection = data.testimonialSection ?? null;
+      this.testimonials = data.testimonials?.length ? data.testimonials : TESTIMONIAL_SLIDE;
       this.tours = data.tours ?? [];
       this.bundlesTours = data.bundlesTours ?? [];
       this.hotels = data.hotels ?? [];
@@ -113,6 +93,8 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
       if (this.sliders.length) {
         this.scheduleBannerSwiperInit();
       }
+      // Re-init testimonial slider so it sees the correct number of slides (fixes 4+ testimonials)
+      this.scheduleTestimonialSlidersInit();
     });
   }
 
@@ -267,12 +249,16 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     const prevEl = host.querySelector<HTMLElement>('.testimonial-card-tab-prev') ?? undefined;
     const nextEl = host.querySelector<HTMLElement>('.testimonial-card-tab-next') ?? undefined;
     if (!visibleSlider) return;
+    // Only enable loop when we have enough slides (6+); otherwise loop duplicates cause layout bugs with 4–5 slides
+    const slideCount = this.testimonials?.length ?? 0;
+    const enableLoop = slideCount >= 6;
     const instance = new SwiperConstructor(visibleSlider, {
       slidesPerView: 1,
       speed: 1500,
       spaceBetween: 25,
-      loop: true,
-      autoplay: { delay: 2500, disableOnInteraction: false },
+      loop: enableLoop,
+      loopAdditionalSlides: enableLoop ? 2 : 0,
+      autoplay: slideCount > 1 ? { delay: 2500, disableOnInteraction: false } : false,
       navigation: prevEl && nextEl ? { nextEl, prevEl } : undefined,
       breakpoints: {
         280: { slidesPerView: 1 },

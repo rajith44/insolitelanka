@@ -10,6 +10,9 @@ import { ContactDetailsFormComponent } from './contact-details-form/contact-deta
 import { GalleryListComponent } from './gallery-list/gallery-list.component';
 import { ContactSubmissionsListComponent } from './contact-submissions-list/contact-submissions-list.component';
 import { NewsletterListComponent } from './newsletter-list/newsletter-list.component';
+import { PhenomenalDealsFormComponent } from './phenomenal-deals-form/phenomenal-deals-form.component';
+import { TestimonialListComponent } from './testimonial-list/testimonial-list.component';
+import { TestimonialFormComponent } from './testimonial-form/testimonial-form.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +21,10 @@ import { NewsletterListComponent } from './newsletter-list/newsletter-list.compo
     ContactDetailsFormComponent,
     GalleryListComponent,
     ContactSubmissionsListComponent,
-    NewsletterListComponent
+    NewsletterListComponent,
+    PhenomenalDealsFormComponent,
+    TestimonialListComponent,
+    TestimonialFormComponent
   ],
   imports: [
     CommonModule,
