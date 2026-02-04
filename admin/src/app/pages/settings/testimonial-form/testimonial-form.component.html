@@ -1,0 +1,65 @@
+<!-- start page title -->
+<app-pagetitle [title]="isEdit ? 'Edit Testimonial' : 'Add Testimonial'" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<!-- end page title -->
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Testimonial Details</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Person Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="personName" placeholder="e.g. Morgane Huby" />
+                @if (form.get('personName')?.invalid && form.get('personName')?.touched) {
+                  <div class="invalid-feedback d-block">Name is required.</div>
+                }
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Country</label>
+                <input type="text" class="form-control" formControlName="country" placeholder="e.g. France" />
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Date</label>
+            <input type="text" class="form-control" formControlName="date" placeholder="e.g. Sep 1, 2024" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Comment / Review <span class="text-danger">*</span></label>
+            <textarea class="form-control" formControlName="personComment" rows="5" placeholder="The testimonial text..."></textarea>
+            @if (form.get('personComment')?.invalid && form.get('personComment')?.touched) {
+              <div class="invalid-feedback d-block">Comment is required.</div>
+            }
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Rating (1–5 stars)</label>
+            <select class="form-select" formControlName="rating">
+              <option [ngValue]="1">1 star</option>
+              <option [ngValue]="2">2 stars</option>
+              <option [ngValue]="3">3 stars</option>
+              <option [ngValue]="4">4 stars</option>
+              <option [ngValue]="5">5 stars</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+            <i class="bx bx-save me-1"></i> Save
+          </button>
+          <button type="button" class="btn btn-light ms-2" (click)="cancel()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

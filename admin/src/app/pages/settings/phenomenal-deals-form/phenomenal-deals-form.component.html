@@ -1,0 +1,227 @@
+<!-- start page title -->
+<app-pagetitle title="Phenomenal Deals (Banner2 Section)" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<!-- end page title -->
+
+@if (loading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="row">
+      <!-- Section title -->
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Section Title</h4>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Badge text (e.g. Hurry Up)</label>
+                  <input type="text" class="form-control" formControlName="sectionBadge" placeholder="Hurry Up" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Heading</label>
+                  <input type="text" class="form-control" formControlName="sectionHeading" placeholder="Phenomenal Deals Offered" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 1 (col-lg-3) -->
+      <div class="col-lg-6 col-xl-3">
+        <div class="card h-100">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Card 1</h5>
+          </div>
+          <div class="card-body" formGroupName="card1">
+            <div class="mb-3">
+              <label class="form-label">Image</label>
+              @if (cardGroup('card1').get('imageUrl')?.value) {
+                <div class="mb-2">
+                  <img [src]="cardGroup('card1').get('imageUrl')?.value" alt="Card 1" class="img-thumbnail" style="max-height: 100px;" />
+                </div>
+              }
+              <div class="d-flex gap-2 flex-wrap">
+                <input type="file" class="form-control form-control-sm" style="max-width: 140px;" accept="image/*" (change)="onCardImageChange('card1', $event)" />
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="openMediaPicker('card1')">
+                  <i class="bx bx-library me-1"></i> Library
+                </button>
+              </div>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Label</label>
+              <input type="text" class="form-control form-control-sm" formControlName="label" placeholder="Savings worldwide" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Title</label>
+              <input type="text" class="form-control form-control-sm" formControlName="title" placeholder="20% Off" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Link URL</label>
+              <input type="text" class="form-control form-control-sm" formControlName="linkUrl" placeholder="/tours" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Link text</label>
+              <input type="text" class="form-control form-control-sm" formControlName="linkText" placeholder="Discover Great Deal" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 (col-lg-5 top) -->
+      <div class="col-lg-6 col-xl-3">
+        <div class="card h-100">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Card 2</h5>
+          </div>
+          <div class="card-body" formGroupName="card2">
+            <div class="mb-3">
+              <label class="form-label">Image</label>
+              @if (cardGroup('card2').get('imageUrl')?.value) {
+                <div class="mb-2">
+                  <img [src]="cardGroup('card2').get('imageUrl')?.value" alt="Card 2" class="img-thumbnail" style="max-height: 100px;" />
+                </div>
+              }
+              <div class="d-flex gap-2 flex-wrap">
+                <input type="file" class="form-control form-control-sm" style="max-width: 140px;" accept="image/*" (change)="onCardImageChange('card2', $event)" />
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="openMediaPicker('card2')">
+                  <i class="bx bx-library me-1"></i> Library
+                </button>
+              </div>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Label</label>
+              <input type="text" class="form-control form-control-sm" formControlName="label" placeholder="Couple Tour" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Title</label>
+              <input type="text" class="form-control form-control-sm" formControlName="title" placeholder="4 Days In Maldives" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Offer badge (e.g. 20% Off)</label>
+              <input type="text" class="form-control form-control-sm" formControlName="offerBadge" placeholder="20% Off" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Link URL</label>
+              <input type="text" class="form-control form-control-sm" formControlName="linkUrl" placeholder="/tours" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Link text</label>
+              <input type="text" class="form-control form-control-sm" formControlName="linkText" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 (col-lg-5 bottom) -->
+      <div class="col-lg-6 col-xl-3">
+        <div class="card h-100">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Card 3</h5>
+          </div>
+          <div class="card-body" formGroupName="card3">
+            <div class="mb-3">
+              <label class="form-label">Image</label>
+              @if (cardGroup('card3').get('imageUrl')?.value) {
+                <div class="mb-2">
+                  <img [src]="cardGroup('card3').get('imageUrl')?.value" alt="Card 3" class="img-thumbnail" style="max-height: 100px;" />
+                </div>
+              }
+              <div class="d-flex gap-2 flex-wrap">
+                <input type="file" class="form-control form-control-sm" style="max-width: 140px;" accept="image/*" (change)="onCardImageChange('card3', $event)" />
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="openMediaPicker('card3')">
+                  <i class="bx bx-library me-1"></i> Library
+                </button>
+              </div>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Label</label>
+              <input type="text" class="form-control form-control-sm" formControlName="label" placeholder="Honeymoon Tour" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Title</label>
+              <input type="text" class="form-control form-control-sm" formControlName="title" placeholder="Enjoy 40% Off" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Subtitle</label>
+              <input type="text" class="form-control form-control-sm" formControlName="subtitle" placeholder="2 Country & 15 Location" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Link URL</label>
+              <input type="text" class="form-control form-control-sm" formControlName="linkUrl" placeholder="/tours" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Link text</label>
+              <input type="text" class="form-control form-control-sm" formControlName="linkText" placeholder="Book Now" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 (col-lg-4) -->
+      <div class="col-lg-6 col-xl-3">
+        <div class="card h-100">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Card 4</h5>
+          </div>
+          <div class="card-body" formGroupName="card4">
+            <div class="mb-3">
+              <label class="form-label">Image</label>
+              @if (cardGroup('card4').get('imageUrl')?.value) {
+                <div class="mb-2">
+                  <img [src]="cardGroup('card4').get('imageUrl')?.value" alt="Card 4" class="img-thumbnail" style="max-height: 100px;" />
+                </div>
+              }
+              <div class="d-flex gap-2 flex-wrap">
+                <input type="file" class="form-control form-control-sm" style="max-width: 140px;" accept="image/*" (change)="onCardImageChange('card4', $event)" />
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="openMediaPicker('card4')">
+                  <i class="bx bx-library me-1"></i> Library
+                </button>
+              </div>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Label</label>
+              <input type="text" class="form-control form-control-sm" formControlName="label" placeholder="Savings worldwide" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Title</label>
+              <input type="text" class="form-control form-control-sm" formControlName="title" placeholder="20% Off" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Subtitle</label>
+              <input type="text" class="form-control form-control-sm" formControlName="subtitle" placeholder="For Your First Book" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Link URL</label>
+              <input type="text" class="form-control form-control-sm" formControlName="linkUrl" placeholder="/tours" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Link text</label>
+              <input type="text" class="form-control form-control-sm" formControlName="linkText" placeholder="Book Now" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+              <i class="bx bx-save me-1"></i> Update Phenomenal Deals
+            </button>
+            <button type="button" class="btn btn-light ms-2" (click)="cancel()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+}

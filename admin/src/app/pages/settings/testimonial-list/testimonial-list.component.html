@@ -1,0 +1,121 @@
+<!-- start page title -->
+<app-pagetitle title="Testimonials" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<!-- end page title -->
+
+<div class="row">
+  <!-- Section title -->
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title mb-0">Section Title (Home Page)</h4>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="sectionForm" (ngSubmit)="saveSection()" class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Badge text</label>
+            <input type="text" class="form-control" formControlName="sectionBadge" placeholder="Testimonial" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Heading</label>
+            <input type="text" class="form-control" formControlName="sectionHeading" placeholder="Regards From Travelers" />
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary" [disabled]="sectionForm.invalid || sectionSaving">
+              @if (sectionSaving) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              }
+              Save Section Title
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Testimonials list -->
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <h4 class="card-title mb-0">Testimonial List</h4>
+        <button type="button" class="btn btn-primary" (click)="onAdd()">
+          <i class="bx bx-plus align-bottom me-1"></i> Add Testimonial
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-sm-12 col-md-6 text-md-end ms-auto">
+            <label class="d-inline-flex align-items-center">
+              Search:
+              <input
+                type="text"
+                class="form-control form-control-sm ms-2"
+                style="width: 200px;"
+                [(ngModel)]="searchTerm"
+                [ngModelOptions]="{standalone: true}"
+                placeholder="Name, comment, country..."
+              />
+            </label>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover table-nowrap align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 50px;">#</th>
+                <th>Name</th>
+                <th>Country</th>
+                <th>Date</th>
+                <th>Comment</th>
+                <th class="text-center" style="width: 140px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (t of filteredItems; track t.id) {
+                <tr>
+                  <td>{{ t.id }}</td>
+                  <td>{{ t.personName }}</td>
+                  <td>{{ t.country }}</td>
+                  <td>{{ t.date }}</td>
+                  <td>{{ (t.personComment || '').slice(0, 60) }}{{ (t.personComment || '').length > 60 ? '...' : '' }}</td>
+                  <td class="text-center">
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-soft-primary" (click)="onEdit(t.id)" title="Edit">
+                        <i class="bx bx-edit-alt"></i>
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-soft-danger"
+                        [disabled]="isDeleting(t.id)"
+                        (click)="onDelete(t.id, t.personName)"
+                        title="Delete"
+                      >
+                        @if (isDeleting(t.id)) {
+                          <span class="spinner-border spinner-border-sm"></span>
+                        } @else {
+                          <i class="bx bx-trash"></i>
+                        }
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="text-center py-4 text-muted">No testimonials. Add one to get started.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="row mt-2">
+          <div class="col-sm-12 col-md-6">
+            <div class="dataTables_info">
+              Showing {{ filteredItems.length }} of {{ items.length }} entries
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

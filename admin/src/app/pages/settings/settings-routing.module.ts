@@ -6,9 +6,21 @@ import { ContactDetailsFormComponent } from './contact-details-form/contact-deta
 import { GalleryListComponent } from './gallery-list/gallery-list.component';
 import { ContactSubmissionsListComponent } from './contact-submissions-list/contact-submissions-list.component';
 import { NewsletterListComponent } from './newsletter-list/newsletter-list.component';
+import { PhenomenalDealsFormComponent } from './phenomenal-deals-form/phenomenal-deals-form.component';
+import { TestimonialListComponent } from './testimonial-list/testimonial-list.component';
+import { TestimonialFormComponent } from './testimonial-form/testimonial-form.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home-page-slider' },
+  { path: 'phenomenal-deals', component: PhenomenalDealsFormComponent },
+  {
+    path: 'testimonials',
+    children: [
+      { path: '', component: TestimonialListComponent },
+      { path: 'add', component: TestimonialFormComponent },
+      { path: 'edit/:id', component: TestimonialFormComponent }
+    ]
+  },
   {
     path: 'home-page-slider',
     children: [

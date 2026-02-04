@@ -7,9 +7,52 @@ const API = environment.apiUrl ?? '';
 const LIMIT = 6;
 const BUNDLES_LIMIT = 30; // fetch more tours to pick one per category
 
+/** One card in the Phenomenal Deals (banner2) section */
+export interface PhenomenalDealCard {
+  imageUrl: string | null;
+  label: string;
+  title: string;
+  subtitle: string | null;
+  linkUrl: string;
+  linkText: string | null;
+  offerBadge: string | null;
+}
+
+/** Phenomenal Deals section (banner2) - single section with 4 cards */
+export interface PhenomenalDealsData {
+  id: string;
+  sectionBadge: string;
+  sectionHeading: string;
+  card1: PhenomenalDealCard;
+  card2: PhenomenalDealCard;
+  card3: PhenomenalDealCard;
+  card4: PhenomenalDealCard;
+}
+
+/** Testimonial section title (badge + heading) */
+export interface TestimonialSectionData {
+  id: string;
+  sectionBadge: string;
+  sectionHeading: string;
+}
+
+/** Single testimonial item for home page */
+export interface TestimonialItem {
+  id: string;
+  personName: string;
+  country: string;
+  date: string;
+  personComment: string;
+  personRating: number[];
+  sortOrder: number;
+}
+
 /** Response from GET /api/home (single request for home page). */
 export interface HomePageData {
   sliders: Array<{ id: string; imageUrl: string; topname: string; title: string; subtitle: string; sortOrder: number }>;
+  phenomenalDeals: PhenomenalDealsData | null;
+  testimonialSection: TestimonialSectionData | null;
+  testimonials: TestimonialItem[];
   tours: HomeTourItem[];
   hotels: HomeHotelItem[];
   destinations: HomeDestinationItem[];
@@ -100,6 +143,56 @@ function mapSlider(raw: any): { id: string; imageUrl: string; topname: string; t
   };
 }
 
+function mapDealCard(raw: any): PhenomenalDealCard {
+  return {
+    imageUrl: raw?.imageUrl ?? null,
+    label: raw?.label ?? '',
+    title: raw?.title ?? '',
+    subtitle: raw?.subtitle ?? null,
+    linkUrl: raw?.linkUrl ?? '',
+    linkText: raw?.linkText ?? null,
+    offerBadge: raw?.offerBadge ?? null,
+  };
+}
+
+function mapPhenomenalDeals(raw: any): PhenomenalDealsData | null {
+  if (!raw || typeof raw !== 'object') return null;
+  return {
+    id: String(raw?.id ?? ''),
+    sectionBadge: raw?.sectionBadge ?? '',
+    sectionHeading: raw?.sectionHeading ?? '',
+    card1: mapDealCard(raw?.card1 ?? {}),
+    card2: mapDealCard(raw?.card2 ?? {}),
+    card3: mapDealCard(raw?.card3 ?? {}),
+    card4: mapDealCard(raw?.card4 ?? {}),
+  };
+}
+
+function mapTestimonialSection(raw: any): TestimonialSectionData | null {
+  if (!raw || typeof raw !== 'object') return null;
+  return {
+    id: String(raw?.id ?? ''),
+    sectionBadge: raw?.sectionBadge ?? '',
+    sectionHeading: raw?.sectionHeading ?? '',
+  };
+}
+
+function mapTestimonial(raw: any): TestimonialItem {
+  const rating = Math.max(1, Math.min(5, Number(raw?.rating ?? 5)));
+  const personRating = Array.isArray(raw?.personRating) && raw.personRating.length
+    ? raw.personRating
+    : Array.from({ length: rating }, (_, i) => i + 1);
+  return {
+    id: String(raw?.id ?? ''),
+    personName: raw?.personName ?? '',
+    country: raw?.country ?? '',
+    date: raw?.date ?? '',
+    personComment: raw?.personComment ?? '',
+    personRating,
+    sortOrder: Number(raw?.sortOrder ?? 0),
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -114,6 +207,9 @@ export class HomeDataService {
     if (!API) {
       return of({
         sliders: [],
+        phenomenalDeals: null,
+        testimonialSection: null,
+        testimonials: [],
         tours: [],
         hotels: [],
         destinations: [],
@@ -122,6 +218,9 @@ export class HomeDataService {
     }
     return this.http.get<{
       sliders?: unknown[];
+      phenomenalDeals?: unknown;
+      testimonialSection?: unknown;
+      testimonials?: unknown[];
       tours?: unknown[];
       hotels?: unknown[];
       destinations?: unknown[];
@@ -141,6 +240,9 @@ export class HomeDataService {
         }
         return {
           sliders: (res?.sliders ?? []).map((s: any) => mapSlider(s)),
+          phenomenalDeals: mapPhenomenalDeals(res?.phenomenalDeals),
+          testimonialSection: mapTestimonialSection(res?.testimonialSection),
+          testimonials: (res?.testimonials ?? []).map((t: any) => mapTestimonial(t)),
           tours,
           hotels: (res?.hotels ?? []).map((h: any) => mapHotel(h)),
           destinations: (res?.destinations ?? []).map((d: any) => mapDestination(d)),
@@ -150,6 +252,9 @@ export class HomeDataService {
       catchError(() =>
         of({
           sliders: [],
+          phenomenalDeals: null,
+          testimonialSection: null,
+          testimonials: [],
           tours: [],
           hotels: [],
           destinations: [],

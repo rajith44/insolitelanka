@@ -7,6 +7,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HomePhenomenalDealsController;
+use App\Http\Controllers\HomeTestimonialController;
+use App\Http\Controllers\HomeTestimonialSectionController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\HomePageSliderController;
 use App\Http\Controllers\HotelController;
@@ -74,6 +77,13 @@ Route::put('/tours/{id}', [TourController::class, 'update']);
 Route::post('/tours/{id}', [TourController::class, 'update']); // POST for FormData
 Route::delete('/tours/{id}', [TourController::class, 'destroy']);
 
+// Home page: Phenomenal Deals (banner2) - public read for /home payload
+Route::get('/home-phenomenal-deals', [HomePhenomenalDealsController::class, 'show']);
+
+// Home page: Testimonial section - public read for /home payload
+Route::get('/home-testimonial-section', [HomeTestimonialSectionController::class, 'show']);
+Route::get('/home-testimonials', [HomeTestimonialController::class, 'index']);
+
 // Settings: Home page slider
 Route::get('/home-page-sliders', [HomePageSliderController::class, 'index']);
 Route::get('/home-page-sliders/{id}', [HomePageSliderController::class, 'show']);
@@ -111,4 +121,17 @@ Route::middleware('auth:api')->group(function () {
     // Admin: view contact form submissions and newsletter subscribers
     Route::get('/contact-submissions', [ContactFormController::class, 'index']);
     Route::get('/newsletter', [NewsletterController::class, 'index']);
+    // Settings: Phenomenal Deals (home page banner2 section) - update only (read is public)
+    Route::put('/home-phenomenal-deals', [HomePhenomenalDealsController::class, 'update']);
+    Route::post('/home-phenomenal-deals', [HomePhenomenalDealsController::class, 'update']);
+    // Settings: Home Testimonials
+    Route::get('/home-testimonial-section', [HomeTestimonialSectionController::class, 'show']);
+    Route::put('/home-testimonial-section', [HomeTestimonialSectionController::class, 'update']);
+    Route::post('/home-testimonial-section', [HomeTestimonialSectionController::class, 'update']);
+    Route::get('/home-testimonials', [HomeTestimonialController::class, 'index']);
+    Route::get('/home-testimonials/{id}', [HomeTestimonialController::class, 'show']);
+    Route::post('/home-testimonials', [HomeTestimonialController::class, 'store']);
+    Route::put('/home-testimonials/{id}', [HomeTestimonialController::class, 'update']);
+    Route::post('/home-testimonials/{id}', [HomeTestimonialController::class, 'update']);
+    Route::delete('/home-testimonials/{id}', [HomeTestimonialController::class, 'destroy']);
 });

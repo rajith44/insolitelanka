@@ -55,6 +55,12 @@ export const MENU: MenuItem[] = [
                 parentId: 105
             },
             {
+                id: 111,
+                label: 'Phenomenal Deals',
+                link: '/settings/phenomenal-deals',
+                parentId: 105
+            },
+            {
                 id: 108,
                 label: 'Gallery',
                 link: '/settings/gallery',
@@ -76,6 +82,12 @@ export const MENU: MenuItem[] = [
                 id: 110,
                 label: 'Newsletter',
                 link: '/settings/newsletter',
+                parentId: 105
+            },
+            {
+                id: 112,
+                label: 'Testimonials',
+                link: '/settings/testimonials',
                 parentId: 105
             }
         ]
