@@ -93,6 +93,8 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
       if (this.sliders.length) {
         this.scheduleBannerSwiperInit();
       }
+      // Re-init testimonial slider so it sees the correct number of slides (fixes 4+ testimonials)
+      this.scheduleTestimonialSlidersInit();
     });
   }
 
@@ -247,12 +249,16 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     const prevEl = host.querySelector<HTMLElement>('.testimonial-card-tab-prev') ?? undefined;
     const nextEl = host.querySelector<HTMLElement>('.testimonial-card-tab-next') ?? undefined;
     if (!visibleSlider) return;
+    // Only enable loop when we have enough slides (6+); otherwise loop duplicates cause layout bugs with 4–5 slides
+    const slideCount = this.testimonials?.length ?? 0;
+    const enableLoop = slideCount >= 6;
     const instance = new SwiperConstructor(visibleSlider, {
       slidesPerView: 1,
       speed: 1500,
       spaceBetween: 25,
-      loop: true,
-      autoplay: { delay: 2500, disableOnInteraction: false },
+      loop: enableLoop,
+      loopAdditionalSlides: enableLoop ? 2 : 0,
+      autoplay: slideCount > 1 ? { delay: 2500, disableOnInteraction: false } : false,
       navigation: prevEl && nextEl ? { nextEl, prevEl } : undefined,
       breakpoints: {
         280: { slidesPerView: 1 },
