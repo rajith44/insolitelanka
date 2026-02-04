@@ -7,18 +7,28 @@
     <div class="card">
       <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
         <h4 class="card-title mb-0">Gallery Photos</h4>
-        <label class="btn btn-primary mb-0" [class.disabled]="uploading">
-          <i class="bx bx-upload align-bottom me-1"></i>
-          {{ uploading ? 'Uploading...' : 'Upload Photos' }}
-          <input
-            type="file"
-            class="d-none"
-            accept="image/*"
-            multiple
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+          <label class="btn btn-primary mb-0" [class.disabled]="uploading">
+            <i class="bx bx-upload align-bottom me-1"></i>
+            {{ uploading ? 'Uploading...' : 'Upload Photos' }}
+            <input
+              type="file"
+              class="d-none"
+              accept="image/*"
+              multiple
+              [disabled]="uploading"
+              (change)="onFileSelect($event)"
+            />
+          </label>
+          <button
+            type="button"
+            class="btn btn-outline-primary mb-0"
             [disabled]="uploading"
-            (change)="onFileSelect($event)"
-          />
-        </label>
+            (click)="onSelectFromLibrary()"
+          >
+            <i class="bx bx-library me-1"></i> Select from library
+          </button>
+        </div>
       </div>
       <div class="card-body">
         <!-- Upload zone -->

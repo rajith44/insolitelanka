@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   defaultauth: 'fake-backend',
-  apiUrl: 'https://your-api-domain.com/api',
+  apiUrl: 'https://api.insolitelanka.com/api',
   firebaseConfig: {
     apiKey: '',
     authDomain: '',

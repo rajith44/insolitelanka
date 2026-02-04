@@ -40,6 +40,17 @@ export class GalleryService {
     );
   }
 
+  /** Add existing media from library to gallery by media IDs */
+  addFromLibrary(mediaIds: number[]): Observable<GalleryItem[]> {
+    if (!API || !mediaIds?.length) return of([]);
+    const formData = new FormData();
+    mediaIds.forEach(id => formData.append('media_ids[]', String(id)));
+    return this.http.post<any[]>(`${API}/gallery`, formData).pipe(
+      map(list => (list ?? []).map(mapApiToItem)),
+      catchError(() => of([]))
+    );
+  }
+
   delete(id: string): Observable<boolean> {
     if (!API) return of(false);
     return this.http.delete(`${API}/gallery/${id}`).pipe(

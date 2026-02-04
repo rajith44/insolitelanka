@@ -48,6 +48,8 @@ class HomePageSliderController extends Controller
         $mediaId = null;
         if ($request->hasFile('image')) {
             $mediaId = $this->fileUploadService->store($request->file('image'));
+        } elseif ($request->filled('media_id')) {
+            $mediaId = (int) $request->input('media_id');
         }
 
         $maxOrder = HomePageSlider::max('sort_order') ?? 0;
@@ -88,6 +90,8 @@ class HomePageSliderController extends Controller
 
         if ($request->hasFile('image')) {
             $data['media_id'] = $this->fileUploadService->store($request->file('image'));
+        } elseif ($request->filled('media_id')) {
+            $data['media_id'] = (int) $request->input('media_id');
         }
 
         $slider->update($data);
