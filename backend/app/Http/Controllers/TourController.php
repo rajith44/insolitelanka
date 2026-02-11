@@ -367,6 +367,16 @@ class TourController extends Controller
             $destinationIds = $this->normalizeIdListFromItem($item, 'destination_ids', 'destinationIds');
             $hotelIds = $this->normalizeIdListFromItem($item, 'hotel_ids', 'hotelIds');
 
+            $walkingTime = isset($item['walking_time']) ? trim((string) $item['walking_time']) : (isset($item['walkingTime']) ? trim((string) $item['walkingTime']) : null);
+            $mealsRaw = $item['meals_included'] ?? $item['mealsIncluded'] ?? [];
+            $mealsIncluded = is_array($mealsRaw) ? array_values(array_filter(array_map('trim', array_map('strval', $mealsRaw)))) : (is_string($mealsRaw) ? (json_decode($mealsRaw, true) ?? []) : []);
+            $elevationGain = isset($item['elevation_gain']) ? trim((string) $item['elevation_gain']) : (isset($item['elevationGain']) ? trim((string) $item['elevationGain']) : null);
+            $elevationLoss = isset($item['elevation_loss']) ? trim((string) $item['elevation_loss']) : (isset($item['elevationLoss']) ? trim((string) $item['elevationLoss']) : null);
+            $distanceCovered = isset($item['distance_covered']) ? trim((string) $item['distance_covered']) : (isset($item['distanceCovered']) ? trim((string) $item['distanceCovered']) : null);
+            $transfer = isset($item['transfer']) ? trim((string) $item['transfer']) : null;
+            $activityRaw = $item['activity'] ?? [];
+            $activity = is_array($activityRaw) ? array_values(array_filter(array_map('trim', array_map('strval', $activityRaw)))) : (is_string($activityRaw) ? (json_decode($activityRaw, true) ?? []) : []);
+
             $itinerary = TourItinerary::create([
                 'tour_id' => $tour->id,
                 'day' => $day,
@@ -377,10 +387,17 @@ class TourController extends Controller
                 'from_city' => $fromCity ? trim($fromCity) : null,
                 'to_city' => $toCity ? trim($toCity) : null,
                 'travel_mileage_km' => $travelMileageKm,
+                'walking_time' => $walkingTime ?: null,
+                'meals_included' => !empty($mealsIncluded) ? $mealsIncluded : null,
+                'elevation_gain' => $elevationGain ?: null,
+                'elevation_loss' => $elevationLoss ?: null,
+                'distance_covered' => $distanceCovered ?: null,
+                'transfer' => $transfer ?: null,
+                'activity' => !empty($activity) ? $activity : null,
                 'destination_ids' => $destinationIds,
                 'hotel_ids' => $hotelIds,
                 'sort_order' => $sortOrder++,
-            ]); 
+            ]);
 
             // Existing media IDs (accept snake_case and camelCase)
             $mediaIds = $item['image_media_ids'] ?? $item['imageMediaIds'] ?? $item['media_ids'] ?? $item['mediaIds'] ?? [];
@@ -553,6 +570,9 @@ class TourController extends Controller
                     $destinations = $destModels->map(fn ($d) => $this->formatOneDestination($d))->toArray();
                 }
 
+                $mealsIncluded = is_array($item->meals_included) ? $item->meals_included : (is_string($item->meals_included) ? json_decode($item->meals_included, true) : []);
+                $activityList = is_array($item->activity) ? $item->activity : (is_string($item->activity) ? json_decode($item->activity, true) : []);
+
                 return [
                     'day' => $item->day ?? '',
                     'dayTitle' => $item->day ?? '',
@@ -570,6 +590,18 @@ class TourController extends Controller
                     'to_city' => $item->to_city ?? '',
                     'travelMileageKm' => $item->travel_mileage_km !== null ? (float) $item->travel_mileage_km : null,
                     'travel_mileage_km' => $item->travel_mileage_km !== null ? (float) $item->travel_mileage_km : null,
+                    'walking_time' => $item->walking_time ?? '',
+                    'walkingTime' => $item->walking_time ?? '',
+                    'meals_included' => is_array($mealsIncluded) ? $mealsIncluded : [],
+                    'mealsIncluded' => is_array($mealsIncluded) ? $mealsIncluded : [],
+                    'elevation_gain' => $item->elevation_gain ?? '',
+                    'elevationGain' => $item->elevation_gain ?? '',
+                    'elevation_loss' => $item->elevation_loss ?? '',
+                    'elevationLoss' => $item->elevation_loss ?? '',
+                    'distance_covered' => $item->distance_covered ?? '',
+                    'distanceCovered' => $item->distance_covered ?? '',
+                    'transfer' => $item->transfer ?? '',
+                    'activity' => is_array($activityList) ? $activityList : [],
                     'destinationIds' => array_map('strval', $destinationIds),
                     'hotelIds' => array_map('strval', $hotelIds),
                     'destinations' => $destinations,
@@ -579,7 +611,57 @@ class TourController extends Controller
                 ];
             })->toArray();
         }
-        return $t->itinerary ?? [];
+        // Legacy itinerary from tours.itinerary JSON: normalize so frontend always gets same shape
+        $legacy = $t->itinerary ?? [];
+        if (! is_array($legacy)) {
+            return [];
+        }
+        $defaults = [
+            'walkingTime' => '',
+            'walking_time' => '',
+            'mealsIncluded' => [],
+            'meals_included' => [],
+            'elevationGain' => '',
+            'elevation_gain' => '',
+            'elevationLoss' => '',
+            'elevation_loss' => '',
+            'distanceCovered' => '',
+            'distance_covered' => '',
+            'transfer' => '',
+            'activity' => [],
+            'hotels' => [],
+        ];
+        return array_values(array_map(function ($entry) use ($defaults) {
+            if (! is_array($entry)) {
+                return array_merge($defaults, ['day' => '', 'title' => '', 'description' => '', 'content' => '', 'fromCity' => '', 'toCity' => '', 'imageUrls' => []]);
+            }
+            $hotels = $entry['hotels'] ?? $entry['Hotels'] ?? [];
+            $activity = $entry['activity'] ?? $entry['Activity'] ?? [];
+            $meals = $entry['mealsIncluded'] ?? $entry['meals_included'] ?? [];
+            return array_merge($defaults, [
+                'day' => $entry['day'] ?? '',
+                'mainTitle' => $entry['mainTitle'] ?? $entry['title'] ?? '',
+                'title' => $entry['title'] ?? '',
+                'description' => $entry['description'] ?? $entry['content'] ?? '',
+                'content' => $entry['content'] ?? $entry['description'] ?? '',
+                'fromCity' => $entry['fromCity'] ?? $entry['from_city'] ?? '',
+                'toCity' => $entry['toCity'] ?? $entry['to_city'] ?? '',
+                'imageUrls' => $entry['imageUrls'] ?? $entry['image_urls'] ?? [],
+                'walkingTime' => $entry['walkingTime'] ?? $entry['walking_time'] ?? '',
+                'walking_time' => $entry['walking_time'] ?? $entry['walkingTime'] ?? '',
+                'mealsIncluded' => is_array($meals) ? $meals : [],
+                'meals_included' => is_array($meals) ? $meals : [],
+                'elevationGain' => $entry['elevationGain'] ?? $entry['elevation_gain'] ?? '',
+                'elevation_gain' => $entry['elevation_gain'] ?? $entry['elevationGain'] ?? '',
+                'elevationLoss' => $entry['elevationLoss'] ?? $entry['elevation_loss'] ?? '',
+                'elevation_loss' => $entry['elevation_loss'] ?? $entry['elevationLoss'] ?? '',
+                'distanceCovered' => $entry['distanceCovered'] ?? $entry['distance_covered'] ?? '',
+                'distance_covered' => $entry['distance_covered'] ?? $entry['distanceCovered'] ?? '',
+                'transfer' => $entry['transfer'] ?? '',
+                'activity' => is_array($activity) ? $activity : [],
+                'hotels' => is_array($hotels) ? $hotels : [],
+            ]);
+        }, $legacy));
     }
 
     /**

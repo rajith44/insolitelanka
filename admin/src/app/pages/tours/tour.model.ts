@@ -7,12 +7,38 @@ export interface ItineraryItem {
   fromCity?: string;
   toCity?: string;
   travelMileageKm?: number | null;
+  walkingTime?: string;
+  mealsIncluded?: string[];
+  elevationGain?: string;
+  elevationLoss?: string;
+  distanceCovered?: string;
+  transfer?: string;
+  activity?: string[];
   destinationIds: string[];
   hotelIds: string[];
   imageUrls: string[];
   /** Existing media IDs from API (for edit) */
   image_media_ids?: number[];
 }
+
+/** Options for Meals included multi-select */
+export const ITINERARY_MEALS_OPTIONS = [
+  { id: 'Breakfast', name: 'Breakfast' },
+  { id: 'Lunch', name: 'Lunch' },
+  { id: 'Dinner', name: 'Dinner' },
+];
+
+/** Options for Activity multi-select */
+export const ITINERARY_ACTIVITY_OPTIONS = [
+  { id: 'Hiking', name: 'Hiking' },
+  { id: 'Trekking', name: 'Trekking' },
+  { id: 'Safari', name: 'Safari' },
+  { id: 'Cultural visit', name: 'Cultural visit' },
+  { id: 'Beach', name: 'Beach' },
+  { id: 'Transfer', name: 'Transfer' },
+  { id: 'Sightseeing', name: 'Sightseeing' },
+  { id: 'Wildlife', name: 'Wildlife' },
+];
 
 export interface FAQItem {
   question: string;

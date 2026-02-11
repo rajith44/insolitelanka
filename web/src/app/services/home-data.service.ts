@@ -47,12 +47,21 @@ export interface TestimonialItem {
   sortOrder: number;
 }
 
+/** Tour parent category for home page grid (id, title, slug, imageUrl). */
+export interface TourParentCategoryItem {
+  id: string;
+  title: string;
+  slug: string;
+  imageUrl: string | null;
+}
+
 /** Response from GET /api/home (single request for home page). */
 export interface HomePageData {
   sliders: Array<{ id: string; imageUrl: string; topname: string; title: string; subtitle: string; sortOrder: number }>;
   phenomenalDeals: PhenomenalDealsData | null;
   testimonialSection: TestimonialSectionData | null;
   testimonials: TestimonialItem[];
+  tourParentCategories: TourParentCategoryItem[];
   tours: HomeTourItem[];
   hotels: HomeHotelItem[];
   destinations: HomeDestinationItem[];
@@ -193,6 +202,15 @@ function mapTestimonial(raw: any): TestimonialItem {
   };
 }
 
+function mapTourParentCategory(raw: any): TourParentCategoryItem {
+  return {
+    id: String(raw?.id ?? ''),
+    title: raw?.title ?? '',
+    slug: raw?.slug ?? '',
+    imageUrl: raw?.imageUrl ?? null,
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -210,6 +228,7 @@ export class HomeDataService {
         phenomenalDeals: null,
         testimonialSection: null,
         testimonials: [],
+        tourParentCategories: [],
         tours: [],
         hotels: [],
         destinations: [],
@@ -221,6 +240,7 @@ export class HomeDataService {
       phenomenalDeals?: unknown;
       testimonialSection?: unknown;
       testimonials?: unknown[];
+      tourParentCategories?: unknown[];
       tours?: unknown[];
       hotels?: unknown[];
       destinations?: unknown[];
@@ -243,6 +263,7 @@ export class HomeDataService {
           phenomenalDeals: mapPhenomenalDeals(res?.phenomenalDeals),
           testimonialSection: mapTestimonialSection(res?.testimonialSection),
           testimonials: (res?.testimonials ?? []).map((t: any) => mapTestimonial(t)),
+          tourParentCategories: (res?.tourParentCategories ?? []).map((c: any) => mapTourParentCategory(c)),
           tours,
           hotels: (res?.hotels ?? []).map((h: any) => mapHotel(h)),
           destinations: (res?.destinations ?? []).map((d: any) => mapDestination(d)),
@@ -255,6 +276,7 @@ export class HomeDataService {
           phenomenalDeals: null,
           testimonialSection: null,
           testimonials: [],
+          tourParentCategories: [],
           tours: [],
           hotels: [],
           destinations: [],

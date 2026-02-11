@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { AfterViewInit, Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -24,7 +24,7 @@ declare global {
   templateUrl: './tour-details.html',
   styleUrl: './tour-details.scss',
 })
-export class TourDetails implements OnInit, AfterViewInit {
+export class TourDetails implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private tourService = inject(TourService);
   private contactService = inject(ContactService);
@@ -32,6 +32,9 @@ export class TourDetails implements OnInit, AfterViewInit {
   private fb = inject(FormBuilder);
 
   tour: TourDetail | null = null;
+  /** True when user has scrolled to the itinerary section; shows sticky bottom bar */
+  showStickyBar = false;
+  private itineraryObserver: IntersectionObserver | null = null;
   loading = true;
   notFound = false;
   selectedDestination: TourDestination | null = null;
@@ -89,6 +92,15 @@ export class TourDetails implements OnInit, AfterViewInit {
     if (!html) return '';
     const text = html.replace(/<[^>]*>/g, '').trim();
     return text.length <= maxLen ? text : text.slice(0, maxLen) + '…';
+  }
+
+  /** Join array for display: optional property (e.g. 'name' for hotels) or raw strings */
+  joinMeta(arr: unknown[] | null | undefined, prop?: string): string {
+    if (!arr || !arr.length) return '';
+    const parts = prop
+      ? (arr as Record<string, unknown>[]).map((x) => x?.[prop]).filter((v) => v != null).map(String)
+      : (arr as unknown[]).map((x) => (x != null ? String(x) : '')).filter(Boolean);
+    return parts.join(', ');
   }
 
   private buildBookingForm(tour: TourDetail): void {
@@ -240,6 +252,7 @@ export class TourDetails implements OnInit, AfterViewInit {
         this.notFound = !t;
         if (t) this.buildBookingForm(t);
         this.cdr.detectChanges();
+        if (t) setTimeout(() => this.setupItineraryObserver(), 0);
       },
       error: () => {
         this.loading = false;
@@ -248,6 +261,32 @@ export class TourDetails implements OnInit, AfterViewInit {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  private setupItineraryObserver(): void {
+    if (typeof document === 'undefined') return;
+    const el = document.getElementById('tour-itinerary-area');
+    if (!el || this.itineraryObserver) return;
+    this.itineraryObserver = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry) {
+          const show = entry.isIntersecting;
+          setTimeout(() => {
+            this.showStickyBar = show;
+            this.cdr.detectChanges();
+          }, 0);
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px' }
+    );
+    this.itineraryObserver.observe(el);
+  }
+
+  /** Scroll to the booking/inquiry sidebar (used by sticky bar CTA). */
+  scrollToBooking(): void {
+    if (typeof document === 'undefined') return;
+    document.getElementById('tour-booking-sidebar')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   ngAfterViewInit(): void {
@@ -330,5 +369,10 @@ export class TourDetails implements OnInit, AfterViewInit {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    this.itineraryObserver?.disconnect();
+    this.itineraryObserver = null;
   }
 }

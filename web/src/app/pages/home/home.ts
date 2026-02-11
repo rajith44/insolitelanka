@@ -18,6 +18,7 @@ import {
   PhenomenalDealsData,
   TestimonialSectionData,
   TestimonialItem,
+  TourParentCategoryItem,
 } from '../../services/home-data.service';
 import type { HomeSliderItem } from '../../services/home-slider.service';
 
@@ -52,6 +53,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   phenomenalDeals: PhenomenalDealsData | null = null;
   testimonialSection: TestimonialSectionData | null = null;
   testimonials: TestimonialItem[] = TESTIMONIAL_SLIDE as TestimonialItem[];
+  tourParentCategories: TourParentCategoryItem[] = [];
   tours: HomeTourItem[] = [];
   bundlesTours: HomeTourItem[] = [];
   hotels: HomeHotelItem[] = [];
@@ -85,6 +87,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
       this.phenomenalDeals = data.phenomenalDeals ?? null;
       this.testimonialSection = data.testimonialSection ?? null;
       this.testimonials = data.testimonials?.length ? data.testimonials : TESTIMONIAL_SLIDE;
+      this.tourParentCategories = data.tourParentCategories ?? [];
       this.tours = data.tours ?? [];
       this.bundlesTours = data.bundlesTours ?? [];
       this.hotels = data.hotels ?? [];

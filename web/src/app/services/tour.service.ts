@@ -14,9 +14,16 @@ export interface TourItineraryItem {
   imageUrls?: string[];
   destinations?: TourDestination[];
   hotels?: TourHotel[];
-  fromCity: string;
-  toCity: string;
-  travelMileageKm: number;
+  fromCity?: string;
+  toCity?: string;
+  travelMileageKm?: number;
+  walkingTime?: string;
+  mealsIncluded?: string[];
+  elevationGain?: string | number;
+  elevationLoss?: string | number;
+  distanceCovered?: string | number;
+  transfer?: string;
+  activity?: string[];
   [key: string]: unknown;
 }
 

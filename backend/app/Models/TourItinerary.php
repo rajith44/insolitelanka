@@ -20,6 +20,13 @@ class TourItinerary extends Model
         'from_city',
         'to_city',
         'travel_mileage_km',
+        'walking_time',
+        'meals_included',
+        'elevation_gain',
+        'elevation_loss',
+        'distance_covered',
+        'transfer',
+        'activity',
         'destination_ids',
         'hotel_ids',
         'sort_order',
@@ -29,6 +36,8 @@ class TourItinerary extends Model
         'sort_order' => 'integer',
         'destination_ids' => 'array',
         'hotel_ids' => 'array',
+        'meals_included' => 'array',
+        'activity' => 'array',
         'travel_mileage_km' => 'decimal:2',
     ];
 

@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { ToursService } from '../tours.service';
-import { Tour, ItineraryItem, FAQItem, ExtraServiceItem } from '../tour.model';
+import { Tour, ItineraryItem, FAQItem, ExtraServiceItem, ITINERARY_MEALS_OPTIONS, ITINERARY_ACTIVITY_OPTIONS } from '../tour.model';
 import { NotificationService } from '../../../core/services/notification.service';
 import { MediaPickerService } from '../../../core/services/media-picker.service';
 
@@ -24,6 +24,8 @@ export class TourFormComponent implements OnInit {
   hotels: { id: string; name: string }[] = [];
   countries: { id: string; name: string }[] = [];
   public Editor = ClassicEditor;
+  readonly mealsOptions = ITINERARY_MEALS_OPTIONS;
+  readonly activityOptions = ITINERARY_ACTIVITY_OPTIONS;
 
   /** File refs for upload (not stored in form) */
   mainImageFile: File | null = null;
@@ -135,15 +137,23 @@ export class TourFormComponent implements OnInit {
   }
 
   private createItineraryGroup(i?: ItineraryItem & { day?: string; title?: string; content?: string }): FormGroup {
+    const raw = i as any;
     return this.fb.group({
-      dayTitle: [i?.dayTitle ?? (i as any)?.day ?? ''],
-      mainTitle: [i?.mainTitle ?? (i as any)?.title ?? ''],
-      description: [i?.description ?? (i as any)?.content ?? ''],
-      dayHighlights: [i?.dayHighlights ?? (i as any)?.day_highlights ?? ''],
-      dayActivities: [i?.dayActivities ?? (i as any)?.day_activities ?? ''],
-      fromCity: [i?.fromCity ?? (i as any)?.from_city ?? ''],
-      toCity: [i?.toCity ?? (i as any)?.to_city ?? ''],
-      travelMileageKm: [i?.travelMileageKm ?? (i as any)?.travel_mileage_km ?? null],
+      dayTitle: [i?.dayTitle ?? raw?.day ?? ''],
+      mainTitle: [i?.mainTitle ?? raw?.title ?? ''],
+      description: [i?.description ?? raw?.content ?? ''],
+      dayHighlights: [i?.dayHighlights ?? raw?.day_highlights ?? ''],
+      dayActivities: [i?.dayActivities ?? raw?.day_activities ?? ''],
+      fromCity: [i?.fromCity ?? raw?.from_city ?? ''],
+      toCity: [i?.toCity ?? raw?.to_city ?? ''],
+      travelMileageKm: [i?.travelMileageKm ?? raw?.travel_mileage_km ?? null],
+      walkingTime: [i?.walkingTime ?? raw?.walking_time ?? ''],
+      mealsIncluded: [i?.mealsIncluded ?? raw?.meals_included ?? []],
+      elevationGain: [i?.elevationGain ?? raw?.elevation_gain ?? ''],
+      elevationLoss: [i?.elevationLoss ?? raw?.elevation_loss ?? ''],
+      distanceCovered: [i?.distanceCovered ?? raw?.distance_covered ?? ''],
+      transfer: [i?.transfer ?? raw?.transfer ?? ''],
+      activity: [i?.activity ?? raw?.activity ?? []],
       destinationIds: [i?.destinationIds ?? []],
       hotelIds: [i?.hotelIds ?? []],
       image_media_ids: [i?.image_media_ids ?? []],
@@ -342,6 +352,17 @@ export class TourFormComponent implements OnInit {
       from_city: it.fromCity ?? '',
       to_city: it.toCity ?? '',
       travel_mileage_km: it.travelMileageKm != null ? Number(it.travelMileageKm) : null,
+      walking_time: it.walkingTime ?? '',
+      meals_included: it.mealsIncluded ?? [],
+      mealsIncluded: it.mealsIncluded ?? [],
+      elevation_gain: it.elevationGain ?? '',
+      elevationGain: it.elevationGain ?? '',
+      elevation_loss: it.elevationLoss ?? '',
+      elevationLoss: it.elevationLoss ?? '',
+      distance_covered: it.distanceCovered ?? '',
+      distanceCovered: it.distanceCovered ?? '',
+      transfer: it.transfer ?? '',
+      activity: it.activity ?? [],
       destinationIds: it.destinationIds || [],
       hotelIds: it.hotelIds || [],
       image_media_ids: (it.image_media_ids ?? []).map((id: number) => Number(id))
